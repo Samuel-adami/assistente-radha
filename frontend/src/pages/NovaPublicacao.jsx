@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 function NovaPublicacao() {
+  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';  // <<<<< Substitua aqui!
+
   const [form, setForm] = useState({
     tema: '',
     objetivo: '',
@@ -34,7 +36,7 @@ function NovaPublicacao() {
       body: JSON.stringify({
         ...form,
         quantidade: Number(form.quantidade),
-        id_assistant: 'asst-xxxx'
+        id_assistant: RADHA_ASSISTANT_ID
       })
     });
 
@@ -68,7 +70,7 @@ function NovaPublicacao() {
         Criar Publicação
       </button>
 
-      <div className="bg-gray-100 p-4 rounded">{resposta}</div>
+      <div className="bg-gray-100 p-4 rounded whitespace-pre-wrap">{resposta}</div>
     </div>
   );
 }
