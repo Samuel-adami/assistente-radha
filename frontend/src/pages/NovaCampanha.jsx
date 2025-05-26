@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 function NovaCampanha() {
+  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
+
   const [form, setForm] = useState({
     tema: '',
     objetivo: '',
@@ -34,7 +36,7 @@ function NovaCampanha() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...form,
-        id_assistant: 'asst-xxxx'
+        id_assistant: RADHA_ASSISTANT_ID
       })
     });
 
