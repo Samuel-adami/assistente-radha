@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter
 from pydantic import BaseModel
 from services.openai_service import gerar_resposta
@@ -11,5 +10,5 @@ class ChatInput(BaseModel):
 
 @router.post("/")
 async def conversar(input: ChatInput):
-    resposta = await gerar_resposta(input.mensagem, input.id_assistant)
+    resposta = await gerar_resposta(input.mensagem, input.id_assistant, contexto='chat')
     return {"resposta": resposta}
