@@ -30,7 +30,8 @@ function NovaPublicacao() {
   };
 
   const handleCriarPublicacao = async () => {
-    const response = await fetch('http://212.85.13.74:8005/nova-publicacao', {
+    const API_URL = process.env.REACT_APP_API_URL;
+    const response = await fetch(`${API_URL}/nova-publicacao`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
