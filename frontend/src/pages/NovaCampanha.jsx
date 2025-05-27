@@ -31,7 +31,7 @@ function NovaCampanha() {
   };
 
   const handleCriarCampanha = async () => {
-    const response = await fetch('http://localhost:8015/nova-campanha', {
+    const response = await fetch('http://212.85.13.74:8005/nova-campanha', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
