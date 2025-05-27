@@ -12,22 +12,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from routes import chat, campanha, publicacao, publicos
-
-app = FastAPI(
-    title="Radha Executor",
-    version="1.0"
-)
-
-# Configuração do CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Pode restringir para ["http://localhost:3000"]
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Inclusão das rotas
 app.include_router(chat.router)
 app.include_router(campanha.router)
