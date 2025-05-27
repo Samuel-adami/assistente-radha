@@ -9,7 +9,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
 
-# ✅ Função principal utilizando Assistants API com função de pesquisa ativada
+# ✅ Função principal sem função de pesquisa
 async def gerar_resposta(prompt, id_assistant=None, contexto='institucional'):
     client = openai.AsyncOpenAI(
         api_key=openai.api_key,
@@ -47,7 +47,7 @@ async def gerar_resposta(prompt, id_assistant=None, contexto='institucional'):
 
     selected_prompt = prompts.get(contexto, prompt_institucional)
 
-    # ✅ Chamada ao Assistants API com função de pesquisa
+    # ✅ Chamada ao Assistants API sem função de pesquisa
     response = await client.chat.completions.create(
         model="gpt-4",
         messages=[
@@ -55,8 +55,7 @@ async def gerar_resposta(prompt, id_assistant=None, contexto='institucional'):
             {"role": "user", "content": prompt}
         ],
         temperature=0.7,
-        user=id_assistant if id_assistant else None,
-        tools=[{"type": "retrieval"}]  # ✅ Ativa função de pesquisa nos arquivos vinculados ao assistant
+        user=id_assistant if id_assistant else None
     )
 
     return response.choices[0].message.content.strip()
