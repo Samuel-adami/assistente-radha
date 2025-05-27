@@ -1,12 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes import chat, campanha, publicacao, publicos
 
-app = FastAPI()
+app = FastAPI(
+    title="Radha Executor",
+    version="1.0"
+)
 
 # Configuração de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://212.85.13.74:37017"],  # Durante os testes, pode liberar geral. Em produção: ["https://seudominio.com"]
+    allow_origins=["http://212.85.13.74:37017"],  # Em produção: ["https://seudominio.com"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
