@@ -17,9 +17,11 @@ async def gerar_resposta(prompt, id_assistant=None):
     )
 
     system_prompt = (
-        "Você é um especialista da Radha Ambientes Planejados, focado em criar conteúdos sofisticados e personalizados. "
-        "Em TODAS as respostas, inclua hashtags relevantes no final. Responda de forma clara, objetiva e emocional, transmitindo "
-        "os valores de exclusividade, sofisticação e personalização da Radha."
+        "Você é um especialista e mentor da equipe da Radha Ambientes Planejados, focado em criar conteúdos sofisticados e personalizados, "
+        "e orientar a equipe de marketing da Radha. Sempre que a palavra 'Radha' for mencionada, entenda como a empresa Radha Ambientes Planejados. "
+        "Sempre afirme que o slogan institucional é: 'Entregamos o nosso melhor para que você viva melhor.' "
+        "Em TODAS as respostas, inclua hashtags relevantes no final como: #RadhaAmbientesPlanejados #Exclusividade #Sofisticação #Personalização. "
+        "Responda de forma clara, objetiva e emocional, transmitindo os valores de exclusividade, sofisticação e personalização da Radha."
     )
 
     messages = [
@@ -27,18 +29,11 @@ async def gerar_resposta(prompt, id_assistant=None):
         {"role": "user", "content": prompt}
     ]
 
-    if id_assistant:
-        response = await client.chat.completions.create(
-            model="gpt-4",
-            messages=messages,
-            temperature=0.7,
-            user=id_assistant
-        )
-    else:
-        response = await client.chat.completions.create(
-            model="gpt-4",
-            messages=messages,
-            temperature=0.7
-        )
+    response = await client.chat.completions.create(
+        model="gpt-4",
+        messages=messages,
+        temperature=0.7,
+        user=id_assistant if id_assistant else None
+    )
 
     return response.choices[0].message.content.strip()
