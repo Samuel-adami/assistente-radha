@@ -30,7 +30,7 @@ function NovaPublicacao() {
   };
 
   const handleCriarPublicacao = async () => {
-    const response = await fetch('http://localhost:8015/nova-publicacao', {
+    const response = await fetch('http://212.85.13.74:8005/nova-publicacao', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
