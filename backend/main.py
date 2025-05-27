@@ -1,6 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI()
+
+# Configuração de CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Durante os testes, pode liberar geral. Em produção: ["https://seudominio.com"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 from routes import chat, campanha, publicacao, publicos
 
 app = FastAPI(
