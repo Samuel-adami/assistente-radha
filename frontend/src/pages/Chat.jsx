@@ -9,7 +9,8 @@ function Chat() {
   const handleSendMessage = async () => {
     const contextualPrompt = `Por favor, responda como especialista da Radha Ambientes Planejados: ${userInput}`;
 
-    const response = await fetch('http://212.85.13.74:8005/chat', {
+    const API_URL = process.env.REACT_APP_API_URL;
+    const response = await fetch(`${API_URL}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
