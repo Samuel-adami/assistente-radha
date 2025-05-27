@@ -1,12 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function PublicosAlvo() {
-  const [publicos, setPublicos] = useState(['Arquitetos', 'Designers de Interiores', 'Clientes finais', 'Empresas']);
+  const API_URL = process.env.REACT_APP_API_URL;
+  const [publicos, setPublicos] = useState([]);
   const [novoPublico, setNovoPublico] = useState('');
 
-  const handleAdicionar = () => {
+  useEffect(() => {
+    fetch(`${API_URL}/publicos`)
+      .then(res => res.json())
+      .then(data => setPublicos(data));
+  }, []);
+
+  const handleAdicionar = async () => {
     if (novoPublico.trim() !== '') {
-      setPublicos([...publicos, novoPublico]);
+      await fetch(`${API_URL}/publicos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome: novoPublico })
+      });
+      setPublicos([...publicos, { nome: novoPublico }]);
       setNovoPublico('');
     }
   };
@@ -17,7 +29,7 @@ function PublicosAlvo() {
 
       <ul className="list-disc pl-5 space-y-1">
         {publicos.map((pub, idx) => (
-          <li key={idx}>{pub}</li>
+          <li key={idx}>{pub.nome}</li>
         ))}
       </ul>
 
