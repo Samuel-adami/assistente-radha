@@ -10,7 +10,7 @@ function Chat() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         mensagem: userInput,
-        id_assistant: 'asst-xxxx'
+        id_assistant: 'asst_OuBtdCCByhjfqPFPZwMK6d9y'
       })
     });
 
