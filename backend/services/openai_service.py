@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import openai
+import asyncio
 
 # ✅ Carregar variáveis do .env
 load_dotenv()
@@ -9,7 +10,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
 
-# ✅ Função principal sem função de pesquisa
+# ✅ Função principal com Assistants API e prompts separados
 async def gerar_resposta(prompt, id_assistant=None, contexto='institucional'):
     client = openai.AsyncOpenAI(
         api_key=openai.api_key,
@@ -48,15 +49,31 @@ async def gerar_resposta(prompt, id_assistant=None, contexto='institucional'):
 
     selected_prompt = prompts.get(contexto, prompt_institucional)
 
-    # ✅ Chamada ao Assistants API sem função de pesquisa
-    response = await client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": selected_prompt},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        user=id_assistant if id_assistant else None
+    # ✅ Criação e execução via Assistants API
+    thread = await client.beta.threads.create()
+
+    await client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=prompt
     )
 
-    return response.choices[0].message.content.strip()
+    run = await client.beta.threads.runs.create(
+        thread_id=thread.id,
+        assistant_id=id_assistant,
+        instructions=selected_prompt
+    )
+
+    while True:
+        run_status = await client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id
+        )
+        if run_status.status == "completed":
+            break
+        await asyncio.sleep(1)
+
+    messages = await client.beta.threads.messages.list(thread_id=thread.id)
+    resposta = messages.data[0].content[0].text.value.strip()
+
+    return resposta
