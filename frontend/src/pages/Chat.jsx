@@ -1,16 +1,20 @@
 import { useState } from 'react';
 
 function Chat() {
+  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';  // ✅ ID real
+
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
 
   const handleSendMessage = async () => {
+    const contextualPrompt = `Por favor, responda como especialista da Radha Ambientes Planejados: ${userInput}`;
+
     const response = await fetch('http://localhost:8015/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        mensagem: userInput,
-        id_assistant: 'asst_OuBtdCCByhjfqPFPZwMK6d9y'
+        mensagem: contextualPrompt,
+        id_assistant: RADHA_ASSISTANT_ID
       })
     });
 
@@ -21,7 +25,7 @@ function Chat() {
   };
 
   const handleDownload = () => {
-    const conversation = messages.map(m => `Você: ${m.user}\nGPT: ${m.bot}\n`).join('\n');
+    const conversation = messages.map(m => `Você: ${m.user}\nAssistente Radha: ${m.bot}\n`).join('\n');
     const blob = new Blob([conversation], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
