@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 
 function NovaCampanha() {
-  const API_URL = process.env.REACT_APP_API_URL;
   const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
 
   const [form, setForm] = useState({
@@ -14,12 +13,6 @@ function NovaCampanha() {
   const [resposta, setResposta] = useState('');
   const [publicosAlvo, setPublicosAlvo] = useState([]);
 
-  useEffect(() => {
-    fetch(`${API_URL}/publicos`)
-      .then(res => res.json())
-      .then(data => setPublicosAlvo(data));
-  }, []);
-
   const objetivos = [
     'Gerar leads',
     'Agendar visitas ao showroom',
@@ -27,11 +20,22 @@ function NovaCampanha() {
     'Divulgar uma promoção específica'
   ];
 
+  useEffect(() => {
+    const fetchPublicos = async () => {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${API_URL}/publicos`);
+      const data = await response.json();
+      setPublicosAlvo(data);
+    };
+    fetchPublicos();
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleCriarCampanha = async () => {
+    const API_URL = process.env.REACT_APP_API_URL;
     const response = await fetch(`${API_URL}/nova-campanha`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -40,6 +44,7 @@ function NovaCampanha() {
         id_assistant: RADHA_ASSISTANT_ID
       })
     });
+
     const data = await response.json();
     setResposta(data.campanha);
   };
@@ -60,7 +65,9 @@ function NovaCampanha() {
       <select name="publico_alvo" className="w-full border p-3 rounded" onChange={handleChange}>
         <option value="">Selecione o Público-Alvo</option>
         {publicosAlvo.map((pub, idx) => (
-          <option key={idx} value={pub.nome}>{pub.nome}</option>
+          <option key={idx} value={`${pub.titulo}: ${pub.descricao}`}>
+            {pub.titulo} - {pub.descricao}
+          </option>
         ))}
       </select>
 
@@ -71,7 +78,7 @@ function NovaCampanha() {
         Criar Campanha
       </button>
 
-      <div className="bg-gray-100 p-4 rounded">{resposta}</div>
+      <div className="bg-gray-100 p-4 rounded whitespace-pre-wrap">{resposta}</div>
     </div>
   );
 }
