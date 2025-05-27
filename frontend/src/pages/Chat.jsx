@@ -37,7 +37,7 @@ function Chat() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-4">
-      <h1 className="text-3xl font-semibold">Chat com GPT</h1>
+      <h1 className="text-3xl font-semibold">Chat com a Assistente Sara</h1>
 
       <div className="space-y-2">
         {messages.map((m, idx) => (
