@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 function NovaPublicacao() {
-  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';  // <<<<< Substitua aqui!
+  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
 
   const [form, setForm] = useState({
     tema: '',
@@ -10,6 +10,7 @@ function NovaPublicacao() {
     quantidade: 1
   });
   const [resposta, setResposta] = useState('');
+  const [descricaoFormato, setDescricaoFormato] = useState('');
 
   const objetivos = [
     'Gerar leads',
@@ -25,8 +26,20 @@ function NovaPublicacao() {
     'Story'
   ];
 
+  const descricoes = {
+    'Post único': 'Legenda com CTA, hashtags, sugestão de imagem e música.',
+    'Post carrossel': 'Título, legenda curta para cada slide, sugestão de imagens e legenda completa.',
+    'Reels': 'Roteiro audiovisual, legenda para vídeo, sugestão de música e legenda completa.',
+    'Story': 'Roteiro visual, texto para criativo, sugestão de sticker e legenda completa.'
+  };
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+
+    if (name === 'formato') {
+      setDescricaoFormato(descricoes[value] || '');
+    }
   };
 
   const handleCriarPublicacao = async () => {
@@ -64,6 +77,10 @@ function NovaPublicacao() {
           <option key={idx} value={fmt}>{fmt}</option>
         ))}
       </select>
+
+      {descricaoFormato && (
+        <p className="text-sm text-gray-600">Descrição: {descricaoFormato}</p>
+      )}
 
       <input name="quantidade" type="number" min="1" placeholder="Quantidade" className="w-full border p-3 rounded" onChange={handleChange} />
 
