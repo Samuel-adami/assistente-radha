@@ -8,7 +8,7 @@ function App() {
   return (
     <Router>
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Radha Executor - Painel</h1>
+        <h1 className="text-2xl font-bold mb-4">Assistente Radha - Painel</h1>
 
         <nav className="space-x-4 mb-6">
           <Link to="/" className="text-blue-500 hover:underline">Chat</Link>
