@@ -1,25 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 function PublicosAlvo() {
-  const API_URL = process.env.REACT_APP_API_URL;
-  const [publicos, setPublicos] = useState([]);
-  const [novoPublico, setNovoPublico] = useState('');
+  const [publicos, setPublicos] = useState([
+    { titulo: 'Arquitetos', descricao: 'Profissionais responsáveis por projetos de interiores.' },
+    { titulo: 'Designers de Interiores', descricao: 'Especialistas em design de ambientes.' },
+    { titulo: 'Clientes finais', descricao: 'Pessoas interessadas em ambientes planejados para residências.' },
+    { titulo: 'Empresas', descricao: 'Negócios que buscam mobiliário planejado.' }
+  ]);
 
-  useEffect(() => {
-    fetch(`${API_URL}/publicos`)
-      .then(res => res.json())
-      .then(data => setPublicos(data));
-  }, []);
+  const [novoPublico, setNovoPublico] = useState({ titulo: '', descricao: '' });
 
-  const handleAdicionar = async () => {
-    if (novoPublico.trim() !== '') {
-      await fetch(`${API_URL}/publicos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome: novoPublico })
-      });
-      setPublicos([...publicos, { nome: novoPublico }]);
-      setNovoPublico('');
+  const handleAdicionar = () => {
+    if (novoPublico.titulo.trim() !== '' && novoPublico.descricao.trim() !== '') {
+      setPublicos([...publicos, novoPublico]);
+      setNovoPublico({ titulo: '', descricao: '' });
     }
   };
 
@@ -29,16 +23,26 @@ function PublicosAlvo() {
 
       <ul className="list-disc pl-5 space-y-1">
         {publicos.map((pub, idx) => (
-          <li key={idx}>{pub.nome}</li>
+          <li key={idx}>
+            <strong>{pub.titulo}:</strong> {pub.descricao}
+          </li>
         ))}
       </ul>
 
       <input
         type="text"
-        value={novoPublico}
-        onChange={(e) => setNovoPublico(e.target.value)}
-        placeholder="Novo público-alvo"
+        value={novoPublico.titulo}
+        onChange={(e) => setNovoPublico({ ...novoPublico, titulo: e.target.value })}
+        placeholder="Novo título de público-alvo"
         className="w-full border p-3 rounded"
+      />
+
+      <textarea
+        value={novoPublico.descricao}
+        onChange={(e) => setNovoPublico({ ...novoPublico, descricao: e.target.value })}
+        placeholder="Descrição do público-alvo"
+        className="w-full border p-3 rounded"
+        rows="3"
       />
 
       <button className="bg-indigo-600 text-white px-4 py-2 rounded" onClick={handleAdicionar}>
