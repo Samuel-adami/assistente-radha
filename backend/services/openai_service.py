@@ -1,6 +1,6 @@
 import os
-import openai
 from dotenv import load_dotenv
+import openai
 
 # ✅ Carregar variáveis do .env
 load_dotenv()
@@ -9,37 +9,54 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
 
-# ✅ Função principal com ajuste inteligente
-async def gerar_resposta(prompt, id_assistant=None, contexto='geral'):
+# ✅ Função principal utilizando Assistants API com função de pesquisa ativada
+async def gerar_resposta(prompt, id_assistant=None, contexto='institucional'):
     client = openai.AsyncOpenAI(
         api_key=openai.api_key,
         base_url=openai.api_base
     )
 
-    # ✅ Prompt base sempre
-    system_prompt = (
-        "Você é um especialista e mentor da equipe da Radha Ambientes Planejados, focado em criar conteúdos sofisticados e personalizados, "
-        "e orientar a equipe de marketing da Radha. Sempre que a palavra 'Radha' for mencionada, entenda como a empresa Radha Ambientes Planejados. "
-        "Sempre afirme que o slogan institucional é: 'Entregamos o nosso melhor para que você viva melhor.'"
+    # ✅ Prompts separados
+    prompt_institucional = (
+        "Você é Sara, assistente digital e mentora da equipe da Radha Ambientes Planejados. "
+        "Fundada em 01/06/2013 por Andréia Bourscheid e Samuel Adami, com mais de 10 anos de experiência. "
+        "Endereço: Av. General Flores da Cunha, 3808 - Pq. Brasília - Cachoeirinha/RS. "
+        "Telefone: (51) 3041-3284. WhatsApp e Logística: (51) 99611-6899. "
+        "Email: comercial@radhamoveis.com.br. Instagram: @radhaambientesplanejados. "
+        "Site: www.radhamoveis.com.br. Formas de pagamento: Dinheiro, Pix, Transferência, Boleto, Santander Financiamentos (até 24x). "
+        "Sempre que perguntado, o slogan é: 'Entregamos o nosso melhor para que você viva melhor.'"
     )
 
-    # ✅ Se contexto for publicação → adiciona instrução de hashtags
-    if contexto == 'publicacao':
-        system_prompt += (
-            " Em TODAS as respostas, inclua hashtags relevantes no final como: "
-            "#RadhaAmbientesPlanejados #Exclusividade #Sofisticação #Personalização."
-        )
+    prompt_marketing = (
+        "Você cria conteúdos sofisticados e personalizados, com roteiros visuais, CTAs impactantes, sugestões de imagens, "
+        "músicas livres de direitos autorais, orientando a equipe de marketing da Radha. "
+        "Sempre que criar publicações, inclua hashtags: #RadhaAmbientesPlanejados #Exclusividade #Sofisticação #Personalização."
+    )
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": prompt}
-    ]
+    prompt_processos = (
+        "Você orienta sobre processos internos, práticas comerciais, estratégias de vendas, campanhas de marketing e relacionamento com o cliente, "
+        "sempre transmitindo os valores de exclusividade, sofisticação e personalização da Radha."
+    )
 
+    # ✅ Seleção do prompt conforme contexto
+    prompts = {
+        'institucional': prompt_institucional,
+        'marketing': prompt_marketing,
+        'processos': prompt_processos
+    }
+
+    selected_prompt = prompts.get(contexto, prompt_institucional)
+
+    # ✅ Chamada ao Assistants API com função de pesquisa
     response = await client.chat.completions.create(
         model="gpt-4",
-        messages=messages,
+        messages=[
+            {"role": "system", "content": selected_prompt},
+            {"role": "user", "content": prompt}
+        ],
         temperature=0.7,
-        user=id_assistant if id_assistant else None
+        user=id_assistant if id_assistant else None,
+        tools=[{"type": "retrieval"}]  # ✅ Ativa função de pesquisa nos arquivos vinculados ao assistant
     )
 
     return response.choices[0].message.content.strip()
