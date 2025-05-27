@@ -65,5 +65,5 @@ async def criar_publicacao(input: PublicacaoInput):
             f"Inclua legenda completa, CTA, roteiro visual, sugestão de imagem e música sem direitos autorais."
         )
 
-    resposta = await gerar_resposta(prompt, input.id_assistant)
+    resposta = await gerar_resposta(prompt, input.id_assistant, contexto='publicacao')
     return {"publicacao": resposta}
