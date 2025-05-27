@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy na VPS
         run: |
-          ssh -o StrictHostKeyChecking=no root@seu_ip_aqui "
+          ssh -o StrictHostKeyChecking=no root@212.85.13.74 "
             cd /root/projetos/assistente-radha && \
             git pull origin main && \
             sudo systemctl restart radha-backend.service && \
