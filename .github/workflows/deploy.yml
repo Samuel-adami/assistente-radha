@@ -1,0 +1,37 @@
+name: Deploy Assistente Radha
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+
+    - name: Deploy via SSH
+      run: |
+        ssh -o StrictHostKeyChecking=no root@212.85.13.74 << 'EOF'
+          cd /root/projetos/assistente-radha
+          git pull origin main
+          
+          # Backend
+          source backend/venv/bin/activate
+          pkill -f "uvicorn"
+          nohup uvicorn main:app --host 0.0.0.0 --port 8005 --reload &
+
+          # Frontend
+          cd frontend
+          npm install
+          npm run build
+          nohup serve -s build -l 37017 &
+        EOF
