@@ -1,4 +1,4 @@
-name: Deploy na VPS
+name: Deploy Automático da Sara
 
 on:
   push:
@@ -7,42 +7,28 @@ on:
 
 jobs:
   deploy:
+    name: Deploy para a VPS da Radha
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
+      - name: Clonar o repositório
+        uses: actions/checkout@v3
 
-      - name: Configurar SSH
-        uses: webfactory/ssh-agent@v0.8.0
+      - name: Configurar acesso SSH
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SARA_DEPLOY_KEY }}
 
-      - name: Deploy na VPS
+      - name: Executar script de deploy na VPS
         run: |
-          ssh -o StrictHostKeyChecking=no root@212.85.13.74 << 'EOF'
-            set -e
-            
-            echo "Criando backup..."
-            mkdir -p /root/backups-assistente-radha
-            cd /root/projetos
-            tar -czf /root/backups-assistente-radha/backup-$(date +%Y-%m-%d-%H-%M-%S).tar.gz assistente-radha
-
-            echo "Removendo backups antigos..."
-            ls -1t /root/backups-assistente-radha | tail -n +4 | xargs -I {} rm -f /root/backups-assistente-radha/{}
-
-            echo "Atualizando projeto..."
-            cd /root/projetos/assistente-radha
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SARA_DEPLOY_USER }}@${{ secrets.SARA_DEPLOY_HOST }} << 'EOF'
+            cd /opt/radha/assistente-radha
             git pull origin main
-
-            echo "Atualizando frontend..."
+            source backend/venv/bin/activate
+            pip install -r backend/requirements.txt
+            sudo systemctl restart radha-backend.service
             cd frontend
             npm install
             npm run build
-
-            echo "Reiniciando serviços..."
-            systemctl restart radha-backend.service
-            systemctl restart radha-frontend.service
-
-            echo "Deploy concluído com sucesso!"
+            sudo systemctl restart radha-frontend.service
           EOF
