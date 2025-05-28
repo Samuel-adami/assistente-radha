@@ -19,7 +19,7 @@ HASHTAGS_TEMATICAS = {
     "corporativo": ["#MoveisCorporativos", "#AmbienteDeTrabalho"],
 }
 
-async def gerar_resposta(prompt, id_assistant, contexto=None, tema=None):
+async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
     client = openai.AsyncOpenAI(
         api_key=openai.api_key,
         base_url=openai.api_base
@@ -27,7 +27,7 @@ async def gerar_resposta(prompt, id_assistant, contexto=None, tema=None):
 
     # ✅ Se for contexto de publicação ou campanha, incluir instrução de hashtags
     if contexto in ["publicacao", "campanha"]:
-        prompt += " Inclua hashtags relacionadas ao tema abordado e que reforcem os diferenciais da Radha."
+        partes_prompt = ["Inclua hashtags relacionadas ao tema e que reforcem os diferenciais da Radha."]
 
         # ✅ Adiciona hashtags contextuais se tema for informado
         if tema:
@@ -36,7 +36,9 @@ async def gerar_resposta(prompt, id_assistant, contexto=None, tema=None):
                 if palavra in tema.lower():
                     hashtags.extend(tags)
             if hashtags:
-                prompt += f" Inclua também as hashtags: {' '.join(hashtags)}."
+                partes_prompt.append(f"Inclua também as hashtags: {' '.join(hashtags)}.")
+
+        prompt += " " + " ".join(partes_prompt)
 
     thread = await client.beta.threads.create()
 
@@ -62,9 +64,13 @@ async def gerar_resposta(prompt, id_assistant, contexto=None, tema=None):
 
     messages = await client.beta.threads.messages.list(thread_id=thread.id)
 
+    # ✅ Concatenar todas as respostas do tipo 'assistant'
+    respostas = []
     for msg in messages.data:
         if msg.role == "assistant":
-            resposta = msg.content[0].text.value.strip()
-            return resposta
+            respostas.append(msg.content[0].text.value.strip())
+
+    if respostas:
+        return "\n\n".join(respostas)
 
     return "Não foi possível obter uma resposta do assistente."
