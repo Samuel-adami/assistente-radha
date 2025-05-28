@@ -35,6 +35,11 @@ jobs:
             cd /root/projetos/assistente-radha
             git pull origin main
 
+            echo "Atualizando frontend..."
+            cd frontend
+            npm install
+            npm run build
+
             echo "Reiniciando serviços..."
             systemctl restart radha-backend.service
             systemctl restart radha-frontend.service
