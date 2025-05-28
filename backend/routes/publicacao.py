@@ -27,13 +27,13 @@ async def criar_publicacao(input: PublicacaoInput):
 
     elif formato == "post carrossel":
         prompt = (
-            f"Crie {input.quantidade} publicações no formato {input.formato} sobre {input.tema}. "
-            f"Objetivo: {input.objetivo}. "
-            f"Para cada carrossel, elabore: "
-            f"1. Título impactante; "
-            f"2. Legenda curta para cada slide (o que aparece no criativo); "
-            f"3. Sugestão de imagem para cada slide, incluindo uma cozinha planejada; "
-            f"4. Legenda completa da publicação com CTA e hashtags relevantes."
+            f"Crie {input.quantidade} publicações no formato {input.formato} sobre {input.tema}.\n "
+            f"Objetivo: {input.objetivo}.\n "
+            f"Para cada carrossel, elabore apenas:\n "
+            f"1. Título impactante para o carrossel;\n "
+            f"2. Legenda curta para cada slide (o que aparece no criativo, máx. 100 caracteres para não poluir o criativo);\n "
+            f"3. Sugestão de imagem para cada slide (incluindo uma cozinha planejada);\n "
+            f"4. Uma única legenda geral para o carrossel, com CTA e hashtags relevantes (máx. 300 caracteres)."
         )
 
     elif formato == "reels":
