@@ -23,7 +23,7 @@ function NovaCampanha() {
   useEffect(() => {
     const fetchPublicos = async () => {
       const API_URL = process.env.REACT_APP_API_URL;
-      const response = await fetch('/api/publicos');
+      const response = await fetch('/publicos');
       const data = await response.json();
       setPublicosAlvo(data);
     };
