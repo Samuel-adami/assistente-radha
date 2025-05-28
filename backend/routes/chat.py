@@ -10,5 +10,5 @@ class ChatInput(BaseModel):
 
 @router.post("/")
 async def conversar(input: ChatInput):
-    resposta = await gerar_resposta(input.mensagem, input.id_assistant, contexto='chat')
+    resposta = await gerar_resposta(input.mensagem, input.id_assistant)
     return {"resposta": resposta}
