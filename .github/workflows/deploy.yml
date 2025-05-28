@@ -10,39 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout código
-      uses: actions/checkout@v4
+      - name: Checkout código
+        uses: actions/checkout@v4
 
-    - name: Configurar SSH
-      uses: webfactory/ssh-agent@v0.8.0
-      with:
-        ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+      - name: Configurar SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
 
-    - name: Deploy na VPS
-      env:
-        SSH_HOST: root@212.85.13.74
-      run: |
-        echo "Conectando na VPS..."
+      - name: Deploy na VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no root@212.85.13.74 << 'EOF'
+            set -e
+            
+            echo "Criando backup..."
+            mkdir -p /root/backups-assistente-radha
+            cd /root/projetos
+            tar -czf /root/backups-assistente-radha/backup-$(date +%Y-%m-%d-%H-%M-%S).tar.gz assistente-radha
 
-        ssh -o StrictHostKeyChecking=no $SSH_HOST << 'EOF'
-          set -e
+            echo "Removendo backups antigos..."
+            ls -1t /root/backups-assistente-radha | tail -n +4 | xargs -I {} rm -f /root/backups-assistente-radha/{}
 
-          echo "📦 Criando backup..."
-          mkdir -p /root/backups-assistente-radha
-          cd /root/projetos
-          tar -czf /root/backups-assistente-radha/backup-$(date +%Y-%m-%d-%H-%M-%S).tar.gz assistente-radha
+            echo "Atualizando projeto..."
+            cd /root/projetos/assistente-radha
+            git pull origin main
 
-          echo "🧹 Removendo backups antigos..."
-          ls -1t /root/backups-assistente-radha | tail -n +4 | xargs -r -I {} rm -f /root/backups-assistente-radha/{}
+            echo "Reiniciando serviços..."
+            systemctl restart radha-backend.service
+            systemctl restart radha-frontend.service
 
-          echo "🔄 Atualizando projeto..."
-          cd /root/projetos/assistente-radha
-          git reset --hard
-          git pull origin main
-
-          echo "🚀 Reiniciando serviços..."
-          systemctl restart radha-backend.service
-          systemctl restart radha-frontend.service
-
-          echo "✅ Deploy concluído com sucesso!"
-        EOF
+            echo "Deploy concluído com sucesso!"
+          EOF
