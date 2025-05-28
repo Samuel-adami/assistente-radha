@@ -25,7 +25,6 @@ async def gerar_resposta(prompt, id_assistant):
     run = await client.beta.threads.runs.create(
         thread_id=thread.id,
         assistant_id=id_assistant
-        tools=[{"type": "retrieval"}]
     )
 
     while True:
