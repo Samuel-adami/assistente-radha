@@ -22,5 +22,12 @@ async def criar_campanha(input: CampanhaInput):
         f"Duração: {input.duracao}. "
         "Inclua: conteúdos criativos, CTA impactante, roteiros para landing pages, posts e reels."
     )
-    resposta = await gerar_resposta(prompt, input.id_assistant)
+
+    resposta = await gerar_resposta(
+        prompt,
+        input.id_assistant,
+        contexto='campanha',
+        tema=input.tema
+    )
+
     return {"campanha": resposta}
