@@ -26,6 +26,10 @@ jobs:
             git pull origin main
             source backend/venv/bin/activate
             pip install -r backend/requirements.txt
+
+            # 🔁 Atualizar a base vetorial
+            python -c "from services.embedding_service import criar_index; criar_index()"
+
             sudo systemctl restart radha-backend.service
             cd frontend
             npm install
