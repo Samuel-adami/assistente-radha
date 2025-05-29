@@ -1,0 +1,20 @@
+[
+  {
+    "email": "comercial@radhamoveis.com.br",
+    "senha": "Lu@123",
+    "nome": "Ana Luísa",
+    "cargo": "Assistente de Marketing"
+  },
+  {
+    "email": "radha@radhamoveis.com.br",
+    "senha": "Sma@1984",
+    "nome": "Samuel Adami",
+    "cargo": "Diretor"
+  },
+  {
+    "email": "financeiro@radhamoveis.com.br",
+    "senha": "Deia@1985",
+    "nome": "Andreia Bourscheid",
+    "cargo": "Diretora"
+    }
+]
