@@ -13,8 +13,10 @@ class ChatInput(BaseModel):
 async def conversar(input: ChatInput):
     # 🔎 Buscar contexto relevante da base de conhecimento
     contexto = buscar_contexto(input.mensagem)
+    
+    print("📚 Contexto carregado:\n", contexto)
 
-    # 📚 Montar o prompt com o contexto
+    # print("📚 Contexto carregado:\n", contexto)📚 Montar o prompt com o contexto
     prompt_com_contexto = f"""Responda com base nas informações abaixo (caso sejam úteis):
 
 {contexto}
