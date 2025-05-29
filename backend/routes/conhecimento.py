@@ -1,13 +1,16 @@
 # routes/conhecimento.py
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from services.embedding_service import buscar_contexto
 from openai import OpenAI
-import os
+from security import verificar_autenticacao
 
-router = APIRouter()
+router = APIRouter(tags=["Conhecimento"])
 
 @router.post("/perguntar-sara")
-async def perguntar_sara(request: Request):
+async def perguntar_sara(
+    request: Request,
+    usuario = Depends(verificar_autenticacao(cargos_permitidos=["Diretoria"]))
+):
     dados = await request.json()
     pergunta = dados.get("pergunta")
     contexto = buscar_contexto(pergunta)
