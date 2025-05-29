@@ -1,7 +1,7 @@
 [
   {
     "username": "Luisa",
-    "senha": "Lu@123",
+    "password": "Lu@123",
     "email": "comercial@radhamoveis.com.br",
     "nome": "Ana Luísa",
     "cargo": "Marketing",
@@ -9,7 +9,7 @@
   },
   {
     "username": "Samuel",
-    "senha": "Sma@1984",
+    "password": "Sma@1984",
     "email": "radha@radhamoveis.com.br",
     "nome": "Samuel Adami",
     "cargo": "Diretoria",
@@ -17,7 +17,7 @@
   },
   {
     "username": "Andreia",
-    "senha": "Deia@1984",
+    "password": "Deia@1984",
     "email": "financeiro@radhamoveis.com.br",
     "nome": "Andreia Bourscheid",
     "cargo": "Diretoria",
