@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from services.openai_service import gerar_resposta
+from services.embedding_service import buscar_documentos_relacionados
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -10,5 +11,17 @@ class ChatInput(BaseModel):
 
 @router.post("/")
 async def conversar(input: ChatInput):
-    resposta = await gerar_resposta(input.mensagem, input.id_assistant)
+    # 🔎 Buscar contexto relevante da base de conhecimento
+    documentos = buscar_documentos_relacionados(input.mensagem, k=3)
+
+    # 📚 Incluir os documentos como parte do prompt
+    contexto = "\n\n".join([doc.page_content for doc in documentos])
+    prompt_com_contexto = f"""Responda com base nas informações abaixo (caso sejam úteis):
+
+{contexto}
+
+Pergunta: {input.mensagem}"""
+
+    # 🤖 Gerar resposta com base no contexto
+    resposta = await gerar_resposta(prompt_com_contexto, input.id_assistant)
     return {"resposta": resposta}
