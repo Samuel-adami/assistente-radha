@@ -1,21 +1,26 @@
 import { useState } from 'react';
 
-function Chat() {
-  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';  // ✅ ID real
+function Chat({ usuarioLogado }) {
+  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
 
   const handleSendMessage = async () => {
-    const contextualPrompt = `Por favor, responda como especialista da Radha Ambientes Planejados: ${userInput}`;
+    if (!usuarioLogado) return;
 
-    const API_URL = process.env.REACT_APP_API_URL;
-    const response = await fetch('/chat', {
+    const response = await fetch(`${API_URL}/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
+      },
       body: JSON.stringify({
-        mensagem: contextualPrompt,
-        id_assistant: RADHA_ASSISTANT_ID
+        mensagem: userInput,
+        id_assistant: RADHA_ASSISTANT_ID,
+        nome_usuario: usuarioLogado.nome,
+        cargo_usuario: usuarioLogado.cargo
       })
     });
 
