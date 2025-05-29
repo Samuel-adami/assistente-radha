@@ -29,7 +29,7 @@ function Login({ setUsuarioLogado }) {
         password,
         nome: data.nome,
         cargo: data.cargo,
-        permissoes: data.permissoes
+        permissoes: data.permissoes || [] 
       });
 
       navigate('/'); // Redireciona após login
