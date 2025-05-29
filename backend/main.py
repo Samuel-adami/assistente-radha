@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import chat, campanha, publicacao, publicos
+from routes import chat, campanha, publicacao, publicos, auth
 
 app = FastAPI(
     title="Radha Executor",
@@ -21,6 +22,7 @@ app.include_router(chat.router)
 app.include_router(campanha.router)
 app.include_router(publicacao.router)
 app.include_router(publicos.router)
+app.include_router(auth.router)
 
 @app.get("/")
 async def root():
