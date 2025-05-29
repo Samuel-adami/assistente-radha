@@ -3,21 +3,21 @@
     "email": "comercial@radhamoveis.com.br",
     "senha": "Lu@123",
     "nome": "Ana Luísa",
-    "cargo": "Assistente de Marketing",
+    "cargo": "Marketing",
     "permissoes": ["chat", "campanhas", "publicacoes"]
   },
   {
     "email": "radha@radhamoveis.com.br",
     "senha": "Sma@1984",
     "nome": "Samuel Adami",
-    "cargo": "Diretor",
+    "cargo": "Diretoria",
     "permissoes": ["chat", "campanhas", "publicacoes", "publico"]
   },
   {
     "email": "financeiro@radhamoveis.com.br",
     "senha": "Deia@1985",
     "nome": "Andreia Bourscheid",
-    "cargo": "Diretora",
+    "cargo": "Diretoria",
     "permissoes": ["chat", "campanhas", "publicacoes", "publico"]
     }
 ]
