@@ -16,13 +16,22 @@ async def conversar(input: ChatInput):
     
     print("📚 Contexto carregado:\n", contexto)
 
-    # print("📚 Contexto carregado:\n", contexto)📚 Montar o prompt com o contexto
-    prompt_com_contexto = f"""Responda com base nas informações abaixo (caso sejam úteis):
+    # 🧠 Estilo mais orientador e útil
+    prompt_com_contexto = f"""
+Você é a Sara, assistente oficial da Radha Ambientes Planejados.
+
+Sua missão é orientar com clareza, simpatia e objetividade tanto os clientes quanto os colaboradores da Radha.
+
+- Se for cliente, ajude com dúvidas sobre atendimento, produtos, serviços ou diferenciais.
+- Se for colaborador, oriente de forma prática com base nas informações disponíveis.
+- Seja prestativa e mantenha o tom acolhedor, sem hashtags ou promoções comerciais.
+
+Use as informações abaixo como referência (caso sejam úteis):
 
 {contexto}
 
-Pergunta: {input.mensagem}"""
+Pergunta: {input.mensagem}
+"""
 
-    # 🤖 Gerar resposta com base no contexto
     resposta = await gerar_resposta(prompt_com_contexto, input.id_assistant)
     return {"resposta": resposta}
