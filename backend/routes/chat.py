@@ -12,10 +12,9 @@ class ChatInput(BaseModel):
 @router.post("/")
 async def conversar(input: ChatInput):
     # 🔎 Buscar contexto relevante da base de conhecimento
-    documentos = buscar_contexto
+    contexto = buscar_contexto(input.mensagem)
 
-    # 📚 Incluir os documentos como parte do prompt
-    contexto = "\n\n".join([doc.page_content for doc in documentos])
+    # 📚 Montar o prompt com o contexto
     prompt_com_contexto = f"""Responda com base nas informações abaixo (caso sejam úteis):
 
 {contexto}
