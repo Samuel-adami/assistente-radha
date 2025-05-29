@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 function App() {
   const [usuarioLogado, setUsuarioLogado] = useState(null);
 
+  // Componente de proteção de rota
   const ProtectedRoute = ({ children }) => {
     return usuarioLogado ? children : <Navigate to="/login" />;
   };
@@ -18,6 +19,7 @@ function App() {
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4">Assistente Radha - Painel</h1>
 
+        {/* Navegação visível apenas se estiver logado */}
         {usuarioLogado && (
           <nav className="space-x-4 mb-6">
             <Link to="/" className="text-blue-500 hover:underline">Chat</Link>
@@ -29,7 +31,7 @@ function App() {
 
         <Routes>
           <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
-          
+
           <Route path="/" element={
             <ProtectedRoute>
               <Chat usuarioLogado={usuarioLogado} />
@@ -51,6 +53,7 @@ function App() {
             </ProtectedRoute>
           } />
 
+          {/* Redirecionamento para a raiz caso rota inválida */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
