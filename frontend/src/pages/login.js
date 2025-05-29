@@ -1,66 +1,80 @@
-<template>
-  <div class="login-container">
-    <h2>Login</h2>
-    <form @submit.prevent="login">
-      <input v-model="username" placeholder="Usuário" required />
-      <input v-model="password" type="password" placeholder="Senha" required />
-      <button type="submit">Entrar</button>
-    </form>
-    <p v-if="erro" class="erro">{{ erro }}</p>
-  </div>
-</template>
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-<script>
-import axios from 'axios'
+function Login({ setUsuarioLogado }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [erro, setErro] = useState('');
+  const navigate = useNavigate();
 
-export default {
-  data() {
-    return {
-      username: '',
-      password: '',
-      erro: ''
-    }
-  },
-  methods: {
-    async login() {
-      try {
-        const response = await axios.post('/auth/login', {
-          username: this.username,
-          password: this.password
-        })
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
 
-        const { nome, mensagem_boas_vindas } = response.data
-        localStorage.setItem('usuario', JSON.stringify({
-          username: this.username,
-          password: this.password,
-          nome,
-          cargo: mensagem_boas_vindas.split('como ')[1]?.replace('.', '')
-        }))
-        
-        alert(mensagem_boas_vindas)
-        this.$router.push('/dashboard') // ou onde for a tela principal
-      } catch (err) {
-        this.erro = err.response?.data?.detail || 'Erro ao fazer login.'
+      if (!response.ok) {
+        throw new Error('Usuário ou senha inválidos');
       }
-    }
-  }
-}
-</script>
 
-<style scoped>
-.login-container {
-  max-width: 300px;
-  margin: 100px auto;
-  text-align: center;
+      const data = await response.json();
+
+      // Salva o usuário logado no estado global (App.js)
+      setUsuarioLogado({
+        username,
+        password,
+        nome: data.nome,
+        cargo: data.mensagem_boas_vindas
+      });
+
+      navigate('/chat');
+    } catch (err) {
+      setErro(err.message);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-6">
+      <div className="bg-white shadow-md rounded px-8 py-6 w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Acesso Restrito</h2>
+
+        {erro && <p className="text-red-500 mb-4 text-center">{erro}</p>}
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Usuário:</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full border rounded px-3 py-2 mt-1"
+            placeholder="Digite seu usuário"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-gray-700">Senha:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border rounded px-3 py-2 mt-1"
+            placeholder="Digite sua senha"
+          />
+        </div>
+
+        <button
+          onClick={handleLogin}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          Entrar
+        </button>
+      </div>
+    </div>
+  );
 }
-input {
-  display: block;
-  margin: 10px auto;
-  padding: 8px;
-  width: 100%;
-}
-.erro {
-  color: red;
-  margin-top: 10px;
-}
-</style>
+
+export default Login;
