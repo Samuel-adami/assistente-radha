@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 function Chat({ usuarioLogado }) {
   const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
-  const API_URL = process.env.REACT_APP_API_URL;
+  
 
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
@@ -10,7 +10,7 @@ function Chat({ usuarioLogado }) {
   const handleSendMessage = async () => {
     if (!usuarioLogado) return;
 
-    const response = await fetch(`${API_URL}/chat`, {
+    const response = await fetch(`/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
