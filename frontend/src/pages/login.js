@@ -23,15 +23,15 @@ function Login({ setUsuarioLogado }) {
 
       const data = await response.json();
 
-      // Salva o usuário logado no estado global (App.js)
+      // Salva os dados necessários para autenticação e uso posterior
       setUsuarioLogado({
         username,
         password,
         nome: data.nome,
-        cargo: data.mensagem_boas_vindas
+        cargo: data.cargo  // <- Usar apenas o cargo, não a saudação
       });
 
-      navigate('/chat');
+      navigate('/'); // <- Redireciona para a rota raiz onde está o Chat
     } catch (err) {
       setErro(err.message);
     }
