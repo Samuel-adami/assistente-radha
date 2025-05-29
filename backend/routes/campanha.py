@@ -1,8 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from services.openai_service import gerar_resposta
+from security import verificar_autenticacao
 
 router = APIRouter(prefix="/nova-campanha", tags=["Campanhas"])
+
+# ✅ Apenas marketing e diretores podem criar campanhas
+autorizacao = verificar_autenticacao(["Marketing", "Diretoria"])
 
 class CampanhaInput(BaseModel):
     tema: str
@@ -13,14 +17,16 @@ class CampanhaInput(BaseModel):
     id_assistant: str = None
 
 @router.post("/")
-async def criar_campanha(input: CampanhaInput):
+async def criar_campanha(input: CampanhaInput, user=Depends(autorizacao)):
     prompt = (
-        f"Crie uma campanha para {input.tema}. "
-        f"Objetivo: {input.objetivo}. "
-        f"Público: {input.publico_alvo}. "
-        f"Orçamento: R${input.orcamento}. "
-        f"Duração: {input.duracao}. "
-        "Inclua: conteúdos criativos, CTA impactante, roteiros para landing pages, posts e reels."
+        f"Você está ajudando {user['nome']} ({user['cargo']}) a planejar uma nova campanha.\n\n"
+        f"Tema: {input.tema}\n"
+        f"Objetivo: {input.objetivo}\n"
+        f"Público-alvo: {input.publico_alvo}\n"
+        f"Orçamento: R${input.orcamento}\n"
+        f"Duração: {input.duracao}\n\n"
+        "Crie conteúdos criativos com CTA, roteiros para landing pages, posts e reels. "
+        "Use linguagem compatível com o posicionamento institucional da Radha."
     )
 
     resposta = await gerar_resposta(
