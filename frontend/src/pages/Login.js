@@ -23,15 +23,16 @@ function Login({ setUsuarioLogado }) {
 
       const data = await response.json();
 
-      // Salva os dados necessários para autenticação e uso posterior
+      // ✅ Salva nome, cargo e permissões recebidos do backend
       setUsuarioLogado({
         username,
         password,
         nome: data.nome,
-        cargo: data.cargo  // <- Usar apenas o cargo, não a saudação
+        cargo: data.cargo,
+        permissoes: data.permissoes
       });
 
-      navigate('/'); // <- Redireciona para a rota raiz onde está o Chat
+      navigate('/'); // Redireciona após login
     } catch (err) {
       setErro(err.message);
     }
