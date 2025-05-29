@@ -3,12 +3,13 @@ from dotenv import load_dotenv
 import openai
 import asyncio
 
+from services.embedding_service import consultar_conhecimento  # ⬅️ NOVO
+
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
 
-# ✅ Dicionário de hashtags contextuais
 HASHTAGS_TEMATICAS = {
     "fábrica": ["#FabricaDeMoveis", "#FabricaPropria", "#MovelPlanejado"],
     "cozinha": ["#CozinhaPlanejada", "#DesignDeInteriores"],
@@ -25,11 +26,14 @@ async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
         base_url=openai.api_base
     )
 
+    # 🔍 Consulta os vetores
+    conhecimento = consultar_conhecimento(prompt)
+    if conhecimento:
+        prompt = f"{conhecimento}\n\nUsuário: {prompt}"
+
     # ✅ Se for contexto de publicação ou campanha, incluir instrução de hashtags
     if contexto in ["publicacao", "campanha"]:
         partes_prompt = ["Inclua hashtags relacionadas ao tema e que reforcem os diferenciais da Radha."]
-
-        # ✅ Adiciona hashtags contextuais se tema for informado
         if tema:
             hashtags = []
             for palavra, tags in HASHTAGS_TEMATICAS.items():
@@ -37,7 +41,6 @@ async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
                     hashtags.extend(tags)
             if hashtags:
                 partes_prompt.append(f"Inclua também as hashtags: {' '.join(hashtags)}.")
-
         prompt += " " + " ".join(partes_prompt)
 
     thread = await client.beta.threads.create()
@@ -64,13 +67,9 @@ async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
 
     messages = await client.beta.threads.messages.list(thread_id=thread.id)
 
-    # ✅ Concatenar todas as respostas do tipo 'assistant'
-    respostas = []
-    for msg in messages.data:
-        if msg.role == "assistant":
-            respostas.append(msg.content[0].text.value.strip())
+    respostas = [
+        msg.content[0].text.value.strip()
+        for msg in messages.data if msg.role == "assistant"
+    ]
 
-    if respostas:
-        return "\n\n".join(respostas)
-
-    return "Não foi possível obter uma resposta do assistente."
+    return "\n\n".join(respostas) if respostas else "Não foi possível obter uma resposta do assistente."
