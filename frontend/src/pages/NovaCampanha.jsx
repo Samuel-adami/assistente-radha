@@ -22,8 +22,7 @@ function NovaCampanha({ usuarioLogado }) {
 
   useEffect(() => {
     const fetchPublicos = async () => {
-      const API_URL = process.env.REACT_APP_API_URL;
-      const response = await fetch(`${API_URL}/publicos`);
+      const response = await fetch(`/publicos`);
       const data = await response.json();
       setPublicosAlvo(data);
     };
@@ -35,8 +34,7 @@ function NovaCampanha({ usuarioLogado }) {
   };
 
   const handleCriarCampanha = async () => {
-    const API_URL = process.env.REACT_APP_API_URL;
-    const response = await fetch(`${API_URL}/nova-campanha`, {
+    const response = await fetch(`/nova-campanha`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
