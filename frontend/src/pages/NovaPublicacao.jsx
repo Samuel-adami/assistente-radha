@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function NovaPublicacao() {
+function NovaPublicacao({ usuarioLogado }) {
   const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
 
   const [form, setForm] = useState({
@@ -19,12 +19,7 @@ function NovaPublicacao() {
     'Divulgar uma promoção específica'
   ];
 
-  const formatos = [
-    'Post único',
-    'Post carrossel',
-    'Reels',
-    'Story'
-  ];
+  const formatos = ['Post único', 'Post carrossel', 'Reels', 'Story'];
 
   const descricoes = {
     'Post único': 'Legenda com CTA, hashtags, sugestão de imagem e música.',
@@ -44,13 +39,18 @@ function NovaPublicacao() {
 
   const handleCriarPublicacao = async () => {
     const API_URL = process.env.REACT_APP_API_URL;
-    const response = await fetch('/nova-publicacao', {
+    const response = await fetch(`${API_URL}/nova-publicacao`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
+      },
       body: JSON.stringify({
         ...form,
         quantidade: Number(form.quantidade),
-        id_assistant: RADHA_ASSISTANT_ID
+        id_assistant: RADHA_ASSISTANT_ID,
+        nome_usuario: usuarioLogado.nome,
+        cargo_usuario: usuarioLogado.cargo
       })
     });
 
