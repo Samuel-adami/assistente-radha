@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from services.openai_service import gerar_resposta
 from services.embedding_service import buscar_contexto
@@ -9,14 +9,14 @@ router = APIRouter(prefix="/chat", tags=["Chat"])
 class ChatInput(BaseModel):
     mensagem: str
     id_assistant: str = None
-    nome_usuario: str
-    cargo_usuario: str
-    
+
 @router.post("/")
-async def conversar(input: ChatInput):
+async def conversar(
+    input: ChatInput,
+    usuario=Depends(verificar_autenticacao(["Administrador", "Marketing", "Comercial", "Logística"]))
+):
     # 🔎 Buscar contexto relevante da base de conhecimento
     contexto = buscar_contexto(input.mensagem)
-    
     print("📚 Contexto carregado:\n", contexto)
 
     # 🧭 Prompt com tom mais sóbrio, direto e institucional
@@ -25,7 +25,7 @@ Você é a Sara, assistente institucional da Radha Ambientes Planejados.
 
 Sua função é fornecer respostas claras, objetivas e confiáveis com base nas informações disponíveis. Evite qualquer linguagem promocional, chamadas para ação, hashtags ou links.
 
-Este atendimento está sendo feito para: {input.nome_usuario} ({input.cargo_usuario})
+Este atendimento está sendo feito para: {usuario['nome']} ({usuario['cargo']})
 
 Comunique-se de forma sóbria e acolhedora. Ajude tanto clientes quanto colaboradores a compreender os processos, diferenciais e diretrizes da Radha.
 
