@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function NovaCampanha() {
+function NovaCampanha({ usuarioLogado }) {
   const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
 
   const [form, setForm] = useState({
@@ -23,7 +23,7 @@ function NovaCampanha() {
   useEffect(() => {
     const fetchPublicos = async () => {
       const API_URL = process.env.REACT_APP_API_URL;
-      const response = await fetch('/publicos');
+      const response = await fetch(`${API_URL}/publicos`);
       const data = await response.json();
       setPublicosAlvo(data);
     };
@@ -36,12 +36,17 @@ function NovaCampanha() {
 
   const handleCriarCampanha = async () => {
     const API_URL = process.env.REACT_APP_API_URL;
-    const response = await fetch('/api/nova-campanha', {
+    const response = await fetch(`${API_URL}/nova-campanha`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
+      },
       body: JSON.stringify({
         ...form,
-        id_assistant: RADHA_ASSISTANT_ID
+        id_assistant: RADHA_ASSISTANT_ID,
+        nome_usuario: usuarioLogado.nome,
+        cargo_usuario: usuarioLogado.cargo
       })
     });
 
