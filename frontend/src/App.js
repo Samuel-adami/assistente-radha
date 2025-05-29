@@ -13,8 +13,10 @@ function App() {
     return usuarioLogado?.permissoes?.includes(rota);
   };
 
-  const ProtectedRoute = ({ children, rota }) => {
-    return usuarioLogado && possuiPermissao(rota) ? children : <Navigate to="/login" />;
+  const ProtectedRoute = ({ children, permissao }) => {
+  if (!usuarioLogado) return <Navigate to="/login" />;
+  if (!usuarioLogado.permissoes.includes(permissao)) return <Navigate to="/" />;
+  return children;
   };
 
   return (
