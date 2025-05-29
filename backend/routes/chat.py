@@ -13,7 +13,7 @@ class ChatInput(BaseModel):
 @router.post("/")
 async def conversar(
     input: ChatInput,
-    usuario=Depends(verificar_autenticacao(["Administrador", "Marketing", "Comercial", "Logística"]))
+    usuario=Depends(verificar_autenticacao(["Diretoria", "Marketing", "Comercial", "Logística"]))
 ):
     # 🔎 Buscar contexto relevante da base de conhecimento
     contexto = buscar_contexto(input.mensagem)
