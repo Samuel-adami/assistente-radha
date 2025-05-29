@@ -9,11 +9,12 @@ import Login from "./pages/Login";
 function App() {
   const [usuarioLogado, setUsuarioLogado] = useState(null);
 
-  // Rota protegida com verificação de permissão
-  const ProtectedRoute = ({ children, permissao }) => {
-    if (!usuarioLogado) return <Navigate to="/login" />;
-    if (!usuarioLogado.permissoes.includes(permissao)) return <Navigate to="/" />;
-    return children;
+  const possuiPermissao = (rota) => {
+    return usuarioLogado?.permissoes?.includes(rota);
+  };
+
+  const ProtectedRoute = ({ children, rota }) => {
+    return usuarioLogado && possuiPermissao(rota) ? children : <Navigate to="/login" />;
   };
 
   return (
@@ -23,16 +24,16 @@ function App() {
 
         {usuarioLogado && (
           <nav className="space-x-4 mb-6">
-            {usuarioLogado.permissoes.includes("chat") && (
+            {possuiPermissao("chat") && (
               <Link to="/" className="text-blue-500 hover:underline">Chat</Link>
             )}
-            {usuarioLogado.permissoes.includes("campanhas") && (
+            {possuiPermissao("campanhas") && (
               <Link to="/nova-campanha" className="text-blue-500 hover:underline">Nova Campanha</Link>
             )}
-            {usuarioLogado.permissoes.includes("publicacoes") && (
+            {possuiPermissao("publicacoes") && (
               <Link to="/nova-publicacao" className="text-blue-500 hover:underline">Nova Publicação</Link>
             )}
-            {usuarioLogado.permissoes.includes("publico") && (
+            {possuiPermissao("publico") && (
               <Link to="/publicos-alvo" className="text-blue-500 hover:underline">Públicos Alvo</Link>
             )}
           </nav>
@@ -41,26 +42,37 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
 
-          <Route path="/" element={
-            <ProtectedRoute permissao="chat">
-              <Chat usuarioLogado={usuarioLogado} />
-            </ProtectedRoute>
-          } />
-          <Route path="/nova-campanha" element={
-            <ProtectedRoute permissao="campanhas">
-              <NovaCampanha usuarioLogado={usuarioLogado} />
-            </ProtectedRoute>
-          } />
-          <Route path="/nova-publicacao" element={
-            <ProtectedRoute permissao="publicacoes">
-              <NovaPublicacao usuarioLogado={usuarioLogado} />
-            </ProtectedRoute>
-          } />
-          <Route path="/publicos-alvo" element={
-            <ProtectedRoute permissao="publico">
-              <PublicosAlvo usuarioLogado={usuarioLogado} />
-            </ProtectedRoute>
-          } />
+          {possuiPermissao("chat") && (
+            <Route path="/" element={
+              <ProtectedRoute rota="chat">
+                <Chat usuarioLogado={usuarioLogado} />
+              </ProtectedRoute>
+            } />
+          )}
+
+          {possuiPermissao("campanhas") && (
+            <Route path="/nova-campanha" element={
+              <ProtectedRoute rota="campanhas">
+                <NovaCampanha usuarioLogado={usuarioLogado} />
+              </ProtectedRoute>
+            } />
+          )}
+
+          {possuiPermissao("publicacoes") && (
+            <Route path="/nova-publicacao" element={
+              <ProtectedRoute rota="publicacoes">
+                <NovaPublicacao usuarioLogado={usuarioLogado} />
+              </ProtectedRoute>
+            } />
+          )}
+
+          {possuiPermissao("publico") && (
+            <Route path="/publicos-alvo" element={
+              <ProtectedRoute rota="publico">
+                <PublicosAlvo usuarioLogado={usuarioLogado} />
+              </ProtectedRoute>
+            } />
+          )}
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
