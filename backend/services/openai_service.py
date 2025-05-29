@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import openai
 import asyncio
 
-from services.embedding_service import consultar_conhecimento  # ⬅️ NOVO
+from services.embedding_service import buscar_contexto as consultar_conhecimento
 
 load_dotenv()
 
