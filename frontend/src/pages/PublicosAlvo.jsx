@@ -1,18 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-function PublicosAlvo() {
-  const [publicos, setPublicos] = useState([
-    { titulo: 'Arquitetos', descricao: 'Profissionais responsáveis por projetos de interiores.' },
-    { titulo: 'Designers de Interiores', descricao: 'Especialistas em design de ambientes.' },
-    { titulo: 'Clientes finais', descricao: 'Pessoas interessadas em ambientes planejados para residências.' },
-    { titulo: 'Empresas', descricao: 'Negócios que buscam mobiliário planejado.' }
-  ]);
-
+function PublicosAlvo({ usuarioLogado }) {
+  const [publicos, setPublicos] = useState([]);
   const [novoPublico, setNovoPublico] = useState({ titulo: '', descricao: '' });
 
-  const handleAdicionar = () => {
-    if (novoPublico.titulo.trim() !== '' && novoPublico.descricao.trim() !== '') {
-      setPublicos([...publicos, novoPublico]);
+  useEffect(() => {
+    const fetchPublicos = async () => {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${API_URL}/publicos`, {
+        headers: {
+          'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
+        }
+      });
+      const data = await response.json();
+      setPublicos(data);
+    };
+
+    fetchPublicos();
+  }, [usuarioLogado]);
+
+  const handleAdicionar = async () => {
+    if (novoPublico.titulo.trim() === '' || novoPublico.descricao.trim() === '') return;
+
+    const API_URL = process.env.REACT_APP_API_URL;
+    const response = await fetch(`${API_URL}/publicos`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
+      },
+      body: JSON.stringify(novoPublico)
+    });
+
+    if (response.ok) {
+      const novo = await response.json();
+      setPublicos([...publicos, novoPublico]); // ou recarrega com novo fetch
       setNovoPublico({ titulo: '', descricao: '' });
     }
   };
