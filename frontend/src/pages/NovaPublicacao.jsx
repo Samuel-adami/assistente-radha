@@ -38,8 +38,7 @@ function NovaPublicacao({ usuarioLogado }) {
   };
 
   const handleCriarPublicacao = async () => {
-    const API_URL = process.env.REACT_APP_API_URL;
-    const response = await fetch(`${API_URL}/nova-publicacao`, {
+    const response = await fetch(`/nova-publicacao`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
