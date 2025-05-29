@@ -9,7 +9,7 @@ function Login({ setUsuarioLogado }) {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(`/auth`, {
+      const response = await fetch(`/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
