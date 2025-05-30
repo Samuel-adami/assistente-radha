@@ -1,20 +1,12 @@
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from services import auth_service
+
+router = APIRouter()
+
 @router.post("/login")
-def login(input: LoginInput):
-    try:
-        with open(USERS_FILE, "r", encoding="utf-8") as f:
-            users = json.load(f)
-    except FileNotFoundError:
-        raise HTTPException(status_code=500, detail="Arquivo de usuários não encontrado.")
-
-    user = next((u for u in users if u["username"] == input.username and u["password"] == input.password), None)
-
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = auth_service.authenticate_user(form_data.username, form_data.password)
     if not user:
-        raise HTTPException(status_code=401, detail="Usuário ou senha inválidos.")
-
-    primeiro_nome = user["nome"].split()[0]
-
-    return {
-        "nome": primeiro_nome,
-        "cargo": user["cargo"],
-        "permissoes": user.get("permissoes", [])
-    }
+        raise HTTPException(status_code=400, detail="Credenciais inválidas")
+    return auth_service.create_access_token(user)
