@@ -7,32 +7,29 @@ function Login({ setUsuarioLogado }) {
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
     try {
       const response = await fetch('/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
 
-      if (!response.ok) {
-        throw new Error('Usuário ou senha inválidos');
-      }
+      if (!response.ok) throw new Error('Usuário ou senha inválidos');
 
       const data = await response.json();
 
-      // ✅ Salva nome, cargo e permissões recebidos do backend
-      setUsuarioLogado({
-        username,
-        password,
+      const usuario = {
         nome: data.nome,
         cargo: data.cargo,
         permissoes: data.permissoes
-      });
+      };
 
-      navigate('/'); // Redireciona após login
+      setUsuarioLogado(usuario);
+      localStorage.setItem("usuarioLogado", JSON.stringify(usuario)); // opcional
+      navigate('/');
     } catch (err) {
       setErro(err.message);
     }
@@ -40,7 +37,10 @@ function Login({ setUsuarioLogado }) {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-6">
-      <div className="bg-white shadow-md rounded px-8 py-6 w-full max-w-md">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white shadow-md rounded px-8 py-6 w-full max-w-md"
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">Acesso Restrito</h2>
 
         {erro && <p className="text-red-500 mb-4 text-center">{erro}</p>}
@@ -53,6 +53,7 @@ function Login({ setUsuarioLogado }) {
             onChange={(e) => setUsername(e.target.value)}
             className="w-full border rounded px-3 py-2 mt-1"
             placeholder="Digite seu usuário"
+            required
           />
         </div>
 
@@ -64,16 +65,17 @@ function Login({ setUsuarioLogado }) {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border rounded px-3 py-2 mt-1"
             placeholder="Digite sua senha"
+            required
           />
         </div>
 
         <button
-          onClick={handleLogin}
+          type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           Entrar
         </button>
-      </div>
+      </form>
     </div>
   );
 }
