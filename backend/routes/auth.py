@@ -12,8 +12,8 @@ async def login(request: Request):
     if not username or not password:
         raise HTTPException(status_code=400, detail="Usuário e senha são obrigatórios")
 
-    user = auth_service.authenticate_user(username, password)
+    user = auth_service.autenticar(username, password)  # nome correto da função
     if not user:
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
 
-    return auth_service.create_access_token(user)
+    return auth_service.criar_token(user)
