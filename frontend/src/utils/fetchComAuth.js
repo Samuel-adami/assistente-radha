@@ -1,11 +1,9 @@
-// ✅ Novo utilitário: frontend/src/utils/fetchComAuth.js
-
 export async function fetchComAuth(url, options = {}) {
-  const auth = localStorage.getItem("auth");
+  const token = localStorage.getItem("authToken");
 
   const headers = {
     ...options.headers,
-    Authorization: auth,
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json"
   };
 
