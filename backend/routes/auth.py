@@ -17,3 +17,10 @@ async def login(request: Request):
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
 
     return auth_service.criar_token(user)
+
+from fastapi import Depends
+from security import verificar_autenticacao
+
+@router.get("/validate")
+async def validar_token(usuario=Depends(verificar_autenticacao())):
+    return {"status": "validado", "usuario": usuario}
