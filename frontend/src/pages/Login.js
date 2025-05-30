@@ -11,7 +11,7 @@ function Login({ setUsuarioLogado }) {
     e.preventDefault();
 
     try {
-      const response = await fetch('/auth/login', {
+      const response = await fetch('https://sara.radhadigital.com.br/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
