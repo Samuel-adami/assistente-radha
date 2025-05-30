@@ -43,7 +43,6 @@ function App() {
         })
         .finally(() => setCarregando(false));
     } else {
-      navigate("/login");
       setCarregando(false);
     }
   }, []);
@@ -58,59 +57,66 @@ function App() {
     return children;
   };
 
-  if (carregando) return <div className="p-6">Carregando...</div>;
+  if (carregando) {
+    return <div className="p-6">Carregando...</div>;
+  }
+
+  if (!usuarioLogado) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    );
+  }
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Assistente Radha - Painel</h1>
 
-      {usuarioLogado && (
-        <>
-          <nav className="space-x-4 mb-6">
-            {possuiPermissao("chat") && (
-              <Link to="/" className="text-blue-500 hover:underline">Chat</Link>
-            )}
-            {possuiPermissao("campanhas") && (
-              <Link to="/nova-campanha" className="text-blue-500 hover:underline">Nova Campanha</Link>
-            )}
-            {possuiPermissao("publicacoes") && (
-              <Link to="/nova-publicacao" className="text-blue-500 hover:underline">Nova Publicação</Link>
-            )}
-            {possuiPermissao("publico") && (
-              <Link to="/publicos-alvo" className="text-blue-500 hover:underline">Públicos Alvo</Link>
-            )}
-          </nav>
+      <nav className="space-x-4 mb-6">
+        {possuiPermissao("chat") && (
+          <Link to="/" className="text-blue-500 hover:underline">Chat</Link>
+        )}
+        {possuiPermissao("campanhas") && (
+          <Link to="/nova-campanha" className="text-blue-500 hover:underline">Nova Campanha</Link>
+        )}
+        {possuiPermissao("publicacoes") && (
+          <Link to="/nova-publicacao" className="text-blue-500 hover:underline">Nova Publicação</Link>
+        )}
+        {possuiPermissao("publico") && (
+          <Link to="/publicos-alvo" className="text-blue-500 hover:underline">Públicos Alvo</Link>
+        )}
+      </nav>
 
-          <Routes>
-            <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
+      <Routes>
+        <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
 
-            {possuiPermissao("chat") && (
-              <Route path="/" element={<Chat usuarioLogado={usuarioLogado} />} />
-            )}
-            {possuiPermissao("campanhas") && (
-              <Route path="/nova-campanha" element={
-                <ProtectedRoute permissao="campanhas">
-                  <NovaCampanha usuarioLogado={usuarioLogado} />
-                </ProtectedRoute>
-              } />
-            )}
-            {possuiPermissao("publicacoes") && (
-              <Route path="/nova-publicacao" element={
-                <ProtectedRoute permissao="publicacoes">
-                  <NovaPublicacao usuarioLogado={usuarioLogado} />
-                </ProtectedRoute>
-              } />
-            )}
-            {possuiPermissao("publico") && (
-              <Route path="/publicos-alvo" element={
-                <ProtectedRoute permissao="publico">
-                  <PublicosAlvo usuarioLogado={usuarioLogado} />
-                </ProtectedRoute>
-              } />
-            )}
-          </Routes>
-        </>
-      )}
+        {possuiPermissao("chat") && (
+          <Route path="/" element={<Chat usuarioLogado={usuarioLogado} />} />
+        )}
+        {possuiPermissao("campanhas") && (
+          <Route path="/nova-campanha" element={
+            <ProtectedRoute permissao="campanhas">
+              <NovaCampanha usuarioLogado={usuarioLogado} />
+            </ProtectedRoute>
+          } />
+        )}
+        {possuiPermissao("publicacoes") && (
+          <Route path="/nova-publicacao" element={
+            <ProtectedRoute permissao="publicacoes">
+              <NovaPublicacao usuarioLogado={usuarioLogado} />
+            </ProtectedRoute>
+          } />
+        )}
+        {possuiPermissao("publico") && (
+          <Route path="/publicos-alvo" element={
+            <ProtectedRoute permissao="publico">
+              <PublicosAlvo usuarioLogado={usuarioLogado} />
+            </ProtectedRoute>
+          } />
+        )}
+      </Routes>
     </div>
   );
 }
