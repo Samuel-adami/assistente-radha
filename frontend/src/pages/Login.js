@@ -22,13 +22,14 @@ function Login({ setUsuarioLogado }) {
       const data = await response.json();
 
       const usuario = {
+        username,
         nome: data.nome,
         cargo: data.cargo,
         permissoes: data.permissoes
       };
 
       setUsuarioLogado(usuario);
-      localStorage.setItem("usuarioLogado", JSON.stringify(usuario)); // opcional
+      localStorage.setItem("auth", `${username}:${password}`);
       navigate('/');
     } catch (err) {
       setErro(err.message);
