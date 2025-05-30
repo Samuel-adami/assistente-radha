@@ -25,16 +25,23 @@ def autenticar(username: str, password: str) -> Optional[dict]:
             return user
     return None
 
-# 🧾 Gerar token
-def criar_token(usuario: dict) -> str:
-    payload = {
+# 🧾 Gerar token e retorno completo
+def criar_token(usuario: dict) -> dict:
+    token = jwt.encode({
         "sub": usuario["username"],
         "nome": usuario["nome"],
         "cargo": usuario["cargo"],
         "permissoes": usuario.get("permissoes", []),
         "exp": datetime.utcnow() + timedelta(minutes=EXPIRATION_MINUTES)
+    }, SECRET_KEY, algorithm=ALGORITHM)
+
+    return {
+        "access_token": token,
+        "usuario": {
+            "username": usuario["username"],
+            "permissoes": usuario.get("permissoes", [])
+        }
     }
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 # 🔍 Decodificar token
 def decodificar_token(token: str) -> Optional[dict]:
