@@ -8,39 +8,35 @@ function Login({ setUsuarioLogado }) {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const formData = new URLSearchParams();
-    formData.append('username', username);
-    formData.append('password', password);
+    try {
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
 
-    const response = await fetch('/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: formData.toString()
-    });
+      if (!response.ok) throw new Error('Usuário ou senha inválidos');
 
-    if (!response.ok) throw new Error('Usuário ou senha inválidos');
+      const data = await response.json();
 
-    const data = await response.json();
+      const usuario = {
+        username,
+        nome: data.nome,
+        cargo: data.cargo,
+        permissoes: data.permissoes
+      };
 
-    const usuario = {
-      username,
-      nome: data.nome,
-      cargo: data.cargo,
-      permissoes: data.permissoes
-    };
-
-    setUsuarioLogado(usuario);
-    localStorage.setItem("auth", `${username}:${password}`);
-    navigate('/');
-  } catch (err) {
-    setErro(err.message);
-  }
-};
+      setUsuarioLogado(usuario);
+      localStorage.setItem("auth", `${username}:${password}`);
+      navigate('/');
+    } catch (err) {
+      setErro(err.message);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-6">
