@@ -48,8 +48,9 @@ function App() {
   }, []);
 
   const possuiPermissao = (rota) => {
-    return usuarioLogado?.permissoes?.includes(rota);
-  };
+  if (!usuarioLogado || !usuarioLogado.permissoes) return false;
+  return usuarioLogado.permissoes.includes(rota);
+};
 
   const ProtectedRoute = ({ children, permissao }) => {
     if (!usuarioLogado) return <Navigate to="/login" />;
