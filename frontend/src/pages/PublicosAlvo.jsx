@@ -1,75 +1,42 @@
-import { useState, useEffect } from 'react';
+// ✅ Atualizado: PublicosAlvo.jsx com fetchComAuth
 
-function PublicosAlvo({ usuarioLogado }) {
+import React, { useEffect, useState } from 'react';
+import { fetchComAuth } from '../utils/fetchComAuth';
+
+function PublicosAlvo() {
   const [publicos, setPublicos] = useState([]);
-  const [novoPublico, setNovoPublico] = useState({ titulo: '', descricao: '' });
+  const [erro, setErro] = useState('');
 
   useEffect(() => {
-    const fetchPublicos = async () => {
-      const API_URL = process.env.REACT_APP_API_URL;
-      const response = await fetch(`${API_URL}/publicos`, {
-        headers: {
-          'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
-        }
-      });
-      const data = await response.json();
-      setPublicos(data);
+    const carregarPublicos = async () => {
+      try {
+        const resultado = await fetchComAuth('/publicos');
+        setPublicos(resultado);
+      } catch (err) {
+        setErro(err.message);
+      }
     };
 
-    fetchPublicos();
-  }, [usuarioLogado]);
-
-  const handleAdicionar = async () => {
-    if (novoPublico.titulo.trim() === '' || novoPublico.descricao.trim() === '') return;
-
-    const API_URL = process.env.REACT_APP_API_URL;
-    const response = await fetch(`${API_URL}/publicos`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
-      },
-      body: JSON.stringify(novoPublico)
-    });
-
-    if (response.ok) {
-      const novo = await response.json();
-      setPublicos([...publicos, novoPublico]); // ou recarrega com novo fetch
-      setNovoPublico({ titulo: '', descricao: '' });
-    }
-  };
+    carregarPublicos();
+  }, []);
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
-      <h1 className="text-3xl font-semibold text-gray-900">Públicos Alvo</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Público Alvo</h1>
 
-      <ul className="list-disc pl-5 space-y-1">
-        {publicos.map((pub, idx) => (
-          <li key={idx}>
-            <strong>{pub.titulo}:</strong> {pub.descricao}
+      {erro && (
+        <div className="p-4 bg-red-100 text-red-700 rounded mb-4">
+          Erro ao carregar: {erro}
+        </div>
+      )}
+
+      <ul className="space-y-2">
+        {publicos.map((p, index) => (
+          <li key={index} className="p-4 bg-white shadow rounded">
+            <strong>{p.nome}</strong> - {p.descricao}
           </li>
         ))}
       </ul>
-
-      <input
-        type="text"
-        value={novoPublico.titulo}
-        onChange={(e) => setNovoPublico({ ...novoPublico, titulo: e.target.value })}
-        placeholder="Novo título de público-alvo"
-        className="w-full border p-3 rounded"
-      />
-
-      <textarea
-        value={novoPublico.descricao}
-        onChange={(e) => setNovoPublico({ ...novoPublico, descricao: e.target.value })}
-        placeholder="Descrição do público-alvo"
-        className="w-full border p-3 rounded"
-        rows="3"
-      />
-
-      <button className="bg-indigo-600 text-white px-4 py-2 rounded" onClick={handleAdicionar}>
-        Adicionar
-      </button>
     </div>
   );
 }
