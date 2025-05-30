@@ -31,8 +31,9 @@ function Login({ setUsuarioLogado }) {
       };
 
       setUsuarioLogado(usuario);
-      localStorage.setItem("auth", `${username}:${password}`);
-      navigate('/');
+      localStorage.setItem("authToken", data.token); // Armazena o token
+      localStorage.setItem("usuario", JSON.stringify(usuario)); // Armazena o usuário
+      window.location.href = "/";
     } catch (err) {
       setErro(err.message);
     }
@@ -74,7 +75,7 @@ function Login({ setUsuarioLogado }) {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
         >
           Entrar
         </button>
