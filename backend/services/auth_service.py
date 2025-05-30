@@ -13,24 +13,25 @@ EXPIRATION_MINUTES = 60
 def carregar_usuarios():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     users_path = os.path.join(base_dir, "..", "users.json")
-    users_path = os.path.normpath(users_path)  # Normaliza o caminho para evitar erros
+    users_path = os.path.normpath(users_path)
     with open(users_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 # ✅ Validar login
-def autenticar(email: str, senha: str) -> Optional[dict]:
+def autenticar(username: str, password: str) -> Optional[dict]:
     usuarios = carregar_usuarios()
     for user in usuarios:
-        if user["email"] == email and user["senha"] == senha:
+        if user["username"] == username and user["password"] == password:
             return user
     return None
 
 # 🧾 Gerar token
 def criar_token(usuario: dict) -> str:
     payload = {
-        "sub": usuario["email"],
+        "sub": usuario["username"],
         "nome": usuario["nome"],
         "cargo": usuario["cargo"],
+        "permissoes": usuario.get("permissoes", []),
         "exp": datetime.utcnow() + timedelta(minutes=EXPIRATION_MINUTES)
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
