@@ -19,6 +19,10 @@ async def login(request: Request):
 
     return auth_service.criar_token(user)
 
+def get_verificador():
+    return verificar_autenticacao(None)
+
 @router.get("/validate")
-async def validar_token(usuario=Depends(verificar_autenticacao(None))):
+async def validar_token(usuario=Depends(get_verificador)):
     return {"status": "validado", "usuario": usuario}
+ 
