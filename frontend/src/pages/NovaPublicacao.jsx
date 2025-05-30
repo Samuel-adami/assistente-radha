@@ -1,93 +1,53 @@
-import { useState } from 'react';
+// ✅ Atualizado: NovaPublicacao.jsx com fetchComAuth
 
-function NovaPublicacao({ usuarioLogado }) {
-  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
+import React, { useState } from 'react';
+import { fetchComAuth } from '../utils/fetchComAuth';
 
-  const [form, setForm] = useState({
-    tema: '',
-    objetivo: '',
-    formato: '',
-    quantidade: 1
-  });
-  const [resposta, setResposta] = useState('');
-  const [descricaoFormato, setDescricaoFormato] = useState('');
+function NovaPublicacao() {
+  const [titulo, setTitulo] = useState('');
+  const [conteudo, setConteudo] = useState('');
+  const [sucesso, setSucesso] = useState(false);
+  const [erro, setErro] = useState('');
 
-  const objetivos = [
-    'Gerar leads',
-    'Agendar visitas ao showroom',
-    'Aumentar reconhecimento da marca',
-    'Divulgar uma promoção específica'
-  ];
-
-  const formatos = ['Post único', 'Post carrossel', 'Reels', 'Story'];
-
-  const descricoes = {
-    'Post único': 'Legenda com CTA, hashtags, sugestão de imagem e música.',
-    'Post carrossel': 'Título, legenda curta para cada slide, sugestão de imagens e legenda completa.',
-    'Reels': 'Roteiro audiovisual, legenda para vídeo, sugestão de música e legenda completa.',
-    'Story': 'Roteiro visual, texto para criativo, sugestão de sticker e legenda completa.'
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-
-    if (name === 'formato') {
-      setDescricaoFormato(descricoes[value] || '');
+  const enviar = async () => {
+    try {
+      await fetchComAuth('/nova-publicacao', {
+        method: 'POST',
+        body: JSON.stringify({ titulo, conteudo })
+      });
+      setSucesso(true);
+      setErro('');
+    } catch (err) {
+      setErro(err.message);
+      setSucesso(false);
     }
   };
 
-  const handleCriarPublicacao = async () => {
-    const response = await fetch(`/nova-publicacao`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
-      },
-      body: JSON.stringify({
-        ...form,
-        quantidade: Number(form.quantidade),
-        id_assistant: RADHA_ASSISTANT_ID,
-        nome_usuario: usuarioLogado.nome,
-        cargo_usuario: usuarioLogado.cargo
-      })
-    });
-
-    const data = await response.json();
-    setResposta(data.publicacao);
-  };
-
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
-      <h1 className="text-3xl font-semibold text-gray-900">Nova Publicação</h1>
-
-      <input name="tema" placeholder="Tema" className="w-full border p-3 rounded" onChange={handleChange} />
-
-      <select name="objetivo" className="w-full border p-3 rounded" onChange={handleChange}>
-        <option value="">Selecione o Objetivo</option>
-        {objetivos.map((obj, idx) => (
-          <option key={idx} value={obj}>{obj}</option>
-        ))}
-      </select>
-
-      <select name="formato" className="w-full border p-3 rounded" onChange={handleChange}>
-        <option value="">Selecione o Formato</option>
-        {formatos.map((fmt, idx) => (
-          <option key={idx} value={fmt}>{fmt}</option>
-        ))}
-      </select>
-
-      {descricaoFormato && (
-        <p className="text-sm text-gray-600">Descrição: {descricaoFormato}</p>
-      )}
-
-      <input name="quantidade" type="number" min="1" placeholder="Quantidade" className="w-full border p-3 rounded" onChange={handleChange} />
-
-      <button className="bg-purple-600 text-white px-4 py-2 rounded" onClick={handleCriarPublicacao}>
-        Criar Publicação
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Nova Publicação</h1>
+      <input
+        className="w-full border rounded px-3 py-2 mb-2"
+        placeholder="Título"
+        value={titulo}
+        onChange={(e) => setTitulo(e.target.value)}
+      />
+      <textarea
+        className="w-full border rounded px-3 py-2 mb-2"
+        placeholder="Conteúdo"
+        rows="5"
+        value={conteudo}
+        onChange={(e) => setConteudo(e.target.value)}
+      />
+      <button
+        onClick={enviar}
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+      >
+        Publicar
       </button>
 
-      <div className="bg-gray-100 p-4 rounded whitespace-pre-wrap">{resposta}</div>
+      {sucesso && <div className="mt-4 p-4 bg-green-100 text-green-800 rounded">Publicação enviada com sucesso!</div>}
+      {erro && <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">Erro: {erro}</div>}
     </div>
   );
 }
