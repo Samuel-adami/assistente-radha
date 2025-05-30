@@ -22,13 +22,12 @@ function App() {
     const auth = localStorage.getItem("auth");
     if (auth && !usuarioLogado) {
       const [username] = auth.split(":");
-      // Carga básica — em produção idealmente deve buscar backend ou usar token
-      const permissaoPadrao = ["chat", "campanhas", "publicacoes", "publico"];
+      const permissoesPadrao = ["chat", "campanhas", "publicacoes", "publico"];
       setUsuarioLogado({
         username,
         nome: username,
         cargo: "Usuário",
-        permissoes: permissaoPadrao
+        permissoes: permissoesPadrao
       });
     } else if (!auth) {
       navigate("/login");
@@ -50,53 +49,54 @@ function App() {
       <h1 className="text-2xl font-bold mb-4">Assistente Radha - Painel</h1>
 
       {usuarioLogado && (
-        <nav className="space-x-4 mb-6">
-          {possuiPermissao("chat") && (
-            <Link to="/" className="text-blue-500 hover:underline">Chat</Link>
-          )}
-          {possuiPermissao("campanhas") && (
-            <Link to="/nova-campanha" className="text-blue-500 hover:underline">Nova Campanha</Link>
-          )}
-          {possuiPermissao("publicacoes") && (
-            <Link to="/nova-publicacao" className="text-blue-500 hover:underline">Nova Publicação</Link>
-          )}
-          {possuiPermissao("publico") && (
-            <Link to="/publicos-alvo" className="text-blue-500 hover:underline">Públicos Alvo</Link>
-          )}
-        </nav>
+        <>
+          <nav className="space-x-4 mb-6">
+            {possuiPermissao("chat") && (
+              <Link to="/" className="text-blue-500 hover:underline">Chat</Link>
+            )}
+            {possuiPermissao("campanhas") && (
+              <Link to="/nova-campanha" className="text-blue-500 hover:underline">Nova Campanha</Link>
+            )}
+            {possuiPermissao("publicacoes") && (
+              <Link to="/nova-publicacao" className="text-blue-500 hover:underline">Nova Publicação</Link>
+            )}
+            {possuiPermissao("publico") && (
+              <Link to="/publicos-alvo" className="text-blue-500 hover:underline">Públicos Alvo</Link>
+            )}
+          </nav>
+
+          <Routes>
+            <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
+
+            {possuiPermissao("chat") && (
+              <Route path="/" element={<Chat usuarioLogado={usuarioLogado} />} />
+            )}
+            {possuiPermissao("campanhas") && (
+              <Route path="/nova-campanha" element={
+                <ProtectedRoute permissao="campanhas">
+                  <NovaCampanha usuarioLogado={usuarioLogado} />
+                </ProtectedRoute>
+              } />
+            )}
+            {possuiPermissao("publicacoes") && (
+              <Route path="/nova-publicacao" element={
+                <ProtectedRoute permissao="publicacoes">
+                  <NovaPublicacao usuarioLogado={usuarioLogado} />
+                </ProtectedRoute>
+              } />
+            )}
+            {possuiPermissao("publico") && (
+              <Route path="/publicos-alvo" element={
+                <ProtectedRoute permissao="publico">
+                  <PublicosAlvo usuarioLogado={usuarioLogado} />
+                </ProtectedRoute>
+              } />
+            )}
+          </Routes>
+        </>
       )}
-
-      <Routes>
-        <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
-
-        {possuiPermissao("chat") && (
-          <Route path="/" element={<Chat usuarioLogado={usuarioLogado} />} />
-        )}
-        {possuiPermissao("campanhas") && (
-          <Route path="/nova-campanha" element={
-            <ProtectedRoute permissao="campanhas">
-              <NovaCampanha usuarioLogado={usuarioLogado} />
-            </ProtectedRoute>
-          } />
-        )}
-        {possuiPermissao("publicacoes") && (
-          <Route path="/nova-publicacao" element={
-            <ProtectedRoute permissao="publicacoes">
-              <NovaPublicacao usuarioLogado={usuarioLogado} />
-            </ProtectedRoute>
-          } />
-        )}
-        {possuiPermissao("publico") && (
-          <Route path="/publicos-alvo" element={
-            <ProtectedRoute permissao="publico">
-              <PublicosAlvo usuarioLogado={usuarioLogado} />
-            </ProtectedRoute>
-          } />
-        )}
-      </Routes>
     </div>
   );
 }
 
 export default AppWrapper;
-
