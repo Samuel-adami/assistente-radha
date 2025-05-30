@@ -1,74 +1,53 @@
-import { useState } from 'react';
+// ✅ Exemplo de uso do fetchComAuth no Chat.jsx
 
-function Chat({ usuarioLogado }) {
-  const RADHA_ASSISTANT_ID = 'asst_OuBtdCCByhjfqPFPZwMK6d9y';
-  
+import React, { useState } from 'react';
+import { fetchComAuth } from '../utils/fetchComAuth';
 
-  const [messages, setMessages] = useState([]);
-  const [userInput, setUserInput] = useState('');
+function Chat() {
+  const [mensagem, setMensagem] = useState('');
+  const [resposta, setResposta] = useState('');
+  const [erro, setErro] = useState('');
 
-  const handleSendMessage = async () => {
-    if (!usuarioLogado) return;
-
-    const response = await fetch(`/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `${usuarioLogado.username}:${usuarioLogado.password}`
-      },
-      body: JSON.stringify({
-        mensagem: userInput,
-        id_assistant: RADHA_ASSISTANT_ID,
-        nome_usuario: usuarioLogado.nome,
-        cargo_usuario: usuarioLogado.cargo
-      })
-    });
-
-    const data = await response.json();
-    const newMessage = { user: userInput, bot: data.resposta };
-    setMessages([...messages, newMessage]);
-    setUserInput('');
-  };
-
-  const handleDownload = () => {
-    const conversation = messages.map(m => `Você: ${m.user}\nAssistente Radha: ${m.bot}\n`).join('\n');
-    const blob = new Blob([conversation], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'conversa_chat.txt';
-    a.click();
+  const enviarMensagem = async () => {
+    try {
+      const resultado = await fetchComAuth('/chat', {
+        method: 'POST',
+        body: JSON.stringify({ mensagem })
+      });
+      setResposta(resultado.resposta || JSON.stringify(resultado));
+    } catch (err) {
+      setErro(err.message);
+    }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-4">
-      <h1 className="text-3xl font-semibold">Chat com a Assistente Sara</h1>
-
-      <div className="space-y-2">
-        {messages.map((m, idx) => (
-          <div key={idx} className="p-2 border-b">
-            <p><strong>Você:</strong> {m.user}</p>
-            <p><strong>Assistente Radha:</strong> {m.bot}</p>
-          </div>
-        ))}
-      </div>
-
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Chat</h1>
       <textarea
-        className="w-full border p-2 rounded"
-        rows="3"
-        value={userInput}
-        onChange={(e) => setUserInput(e.target.value)}
-        placeholder="Digite sua mensagem..."
+        className="w-full border rounded p-2 mb-2"
+        rows="4"
+        value={mensagem}
+        onChange={(e) => setMensagem(e.target.value)}
+        placeholder="Digite sua mensagem"
       />
+      <button
+        onClick={enviarMensagem}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Enviar
+      </button>
 
-      <div className="flex space-x-2">
-        <button onClick={handleSendMessage} className="bg-blue-600 text-white px-4 py-2 rounded">
-          Enviar
-        </button>
-        <button onClick={handleDownload} className="bg-gray-600 text-white px-4 py-2 rounded">
-          Baixar conversa
-        </button>
-      </div>
+      {resposta && (
+        <div className="mt-4 p-4 bg-green-100 rounded">
+          <strong>Resposta:</strong> {resposta}
+        </div>
+      )}
+
+      {erro && (
+        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
+          <strong>Erro:</strong> {erro}
+        </div>
+      )}
     </div>
   );
 }
