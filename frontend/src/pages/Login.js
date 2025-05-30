@@ -11,8 +11,8 @@ function Login({ setUsuarioLogado }) {
     e.preventDefault();
 
     const formData = new URLSearchParams();
-    formData.append("username", username);
-    formData.append("password", password);
+    formData.append('username', username);
+    formData.append('password', password);
 
     try {
       const response = await fetch('/auth/login', {
@@ -20,7 +20,7 @@ function Login({ setUsuarioLogado }) {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: formData
+        body: formData.toString(),
       });
 
       if (!response.ok) throw new Error('Usuário ou senha inválidos');
@@ -31,11 +31,11 @@ function Login({ setUsuarioLogado }) {
         username,
         nome: data.nome,
         cargo: data.cargo,
-        permissoes: data.permissoes
+        permissoes: data.permissoes,
       };
 
       setUsuarioLogado(usuario);
-      localStorage.setItem("auth", `${username}:${password}`);
+      localStorage.setItem('auth', `${username}:${password}`);
       navigate('/');
     } catch (err) {
       setErro(err.message);
@@ -85,10 +85,6 @@ function Login({ setUsuarioLogado }) {
       </form>
     </div>
   );
-}
-
-export default Login;
-
 }
 
 export default Login;
