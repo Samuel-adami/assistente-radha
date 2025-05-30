@@ -16,21 +16,35 @@ function AppWrapper() {
 
 function App() {
   const [usuarioLogado, setUsuarioLogado] = useState(null);
+  const [carregando, setCarregando] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const auth = localStorage.getItem("auth");
-    if (auth && !usuarioLogado) {
-      const [username] = auth.split(":");
-      const permissoesPadrao = ["chat", "campanhas", "publicacoes", "publico"];
-      setUsuarioLogado({
-        username,
-        nome: username,
-        cargo: "Usuário",
-        permissoes: permissoesPadrao
-      });
-    } else if (!auth) {
+    const token = localStorage.getItem("authToken");
+    const userData = localStorage.getItem("usuario");
+
+    if (token && userData) {
+      fetch("https://sara.radhadigital.com.br/auth/validate", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Token inválido");
+          return res.json();
+        })
+        .then(() => {
+          setUsuarioLogado(JSON.parse(userData));
+        })
+        .catch(() => {
+          localStorage.clear();
+          navigate("/login");
+        })
+        .finally(() => setCarregando(false));
+    } else {
       navigate("/login");
+      setCarregando(false);
     }
   }, []);
 
@@ -43,6 +57,8 @@ function App() {
     if (!usuarioLogado.permissoes.includes(permissao)) return <Navigate to="/" />;
     return children;
   };
+
+  if (carregando) return <div className="p-6">Carregando...</div>;
 
   return (
     <div className="p-4">
