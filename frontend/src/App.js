@@ -19,10 +19,21 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!usuarioLogado) {
+    const auth = localStorage.getItem("auth");
+    if (auth && !usuarioLogado) {
+      const [username] = auth.split(":");
+      // Carga básica — em produção idealmente deve buscar backend ou usar token
+      const permissaoPadrao = ["chat", "campanhas", "publicacoes", "publico"];
+      setUsuarioLogado({
+        username,
+        nome: username,
+        cargo: "Usuário",
+        permissoes: permissaoPadrao
+      });
+    } else if (!auth) {
       navigate("/login");
     }
-  }, [usuarioLogado]);
+  }, []);
 
   const possuiPermissao = (rota) => {
     return usuarioLogado?.permissoes?.includes(rota);
@@ -59,13 +70,8 @@ function App() {
         <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
 
         {possuiPermissao("chat") && (
-          <Route path="/" element={
-            <ProtectedRoute permissao="chat">
-              <Chat usuarioLogado={usuarioLogado} />
-            </ProtectedRoute>
-          } />
+          <Route path="/" element={<Chat usuarioLogado={usuarioLogado} />} />
         )}
-
         {possuiPermissao("campanhas") && (
           <Route path="/nova-campanha" element={
             <ProtectedRoute permissao="campanhas">
@@ -73,7 +79,6 @@ function App() {
             </ProtectedRoute>
           } />
         )}
-
         {possuiPermissao("publicacoes") && (
           <Route path="/nova-publicacao" element={
             <ProtectedRoute permissao="publicacoes">
@@ -81,7 +86,6 @@ function App() {
             </ProtectedRoute>
           } />
         )}
-
         {possuiPermissao("publico") && (
           <Route path="/publicos-alvo" element={
             <ProtectedRoute permissao="publico">
@@ -89,11 +93,10 @@ function App() {
             </ProtectedRoute>
           } />
         )}
-
-        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </div>
   );
 }
 
 export default AppWrapper;
+
