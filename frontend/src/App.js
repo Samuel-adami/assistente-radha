@@ -92,30 +92,39 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
 
-        {possuiPermissao("chat") && (
-          <Route path="/" element={<Chat usuarioLogado={usuarioLogado} />} />
-        )}
-        {possuiPermissao("campanhas") && (
-          <Route path="/nova-campanha" element={
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute permissao="chat">
+              <Chat usuarioLogado={usuarioLogado} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/nova-campanha"
+          element={
             <ProtectedRoute permissao="campanhas">
               <NovaCampanha usuarioLogado={usuarioLogado} />
             </ProtectedRoute>
-          } />
-        )}
-        {possuiPermissao("publicacoes") && (
-          <Route path="/nova-publicacao" element={
+          }
+        />
+        <Route
+          path="/nova-publicacao"
+          element={
             <ProtectedRoute permissao="publicacoes">
               <NovaPublicacao usuarioLogado={usuarioLogado} />
             </ProtectedRoute>
-          } />
-        )}
-        {possuiPermissao("publico") && (
-          <Route path="/publicos-alvo" element={
+          }
+        />
+        <Route
+          path="/publicos-alvo"
+          element={
             <ProtectedRoute permissao="publico">
               <PublicosAlvo usuarioLogado={usuarioLogado} />
             </ProtectedRoute>
-          } />
-        )}
+          }
+        />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>
   );
