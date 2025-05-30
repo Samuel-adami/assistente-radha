@@ -1,4 +1,4 @@
-@router.post("/login")
+@router.post("/Login")
 def login(input: LoginInput):
     try:
         with open(USERS_FILE, "r", encoding="utf-8") as f:
