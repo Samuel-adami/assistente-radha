@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Optional
 from jose import jwt
 from datetime import datetime, timedelta
@@ -10,7 +11,10 @@ EXPIRATION_MINUTES = 60
 
 # 🔍 Carregar usuários do JSON
 def carregar_usuarios():
-    with open("users.json", "r", encoding="utf-8") as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    users_path = os.path.join(base_dir, "..", "users.json")
+    users_path = os.path.normpath(users_path)  # Normaliza o caminho para evitar erros
+    with open(users_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 # ✅ Validar login
