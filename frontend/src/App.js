@@ -51,7 +51,7 @@ function App() {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold text-center text-green-900 w-full">Radha One</h1>
+        <h1 className="text-3xl font-bold text-green-900 text-center w-full">Radha One</h1>
         <button
           onClick={() => {
             localStorage.clear();
@@ -64,40 +64,40 @@ function App() {
         </button>
       </div>
 
-     <nav className="flex gap-4 justify-center mb-6">
-  {possuiPermissao("chat") && (
-    <Link
-      to="/"
-      className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded hover:opacity-90"
-    >
-      Assistente Sara
-    </Link>
-  )}
-  {possuiPermissao("campanhas") && (
-    <Link
-      to="/nova-campanha"
-      className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded hover:opacity-90"
-    >
-      Nova Campanha
-    </Link>
-  )}
-  {possuiPermissao("publicacoes") && (
-    <Link
-      to="/nova-publicacao"
-      className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded hover:opacity-90"
-    >
-      Nova Publicação
-    </Link>
-  )}
-  {possuiPermissao("publico") && (
-    <Link
-      to="/publicos-alvo"
-      className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded hover:opacity-90"
-    >
-      Públicos Alvo
-    </Link>
-  )}
-</nav>
+      <nav className="flex gap-4 justify-center mb-6">
+        {possuiPermissao("chat") && (
+          <Link
+            to="/"
+            className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded-md font-medium shadow hover:scale-105 transition"
+          >
+            Assistente Sara
+          </Link>
+        )}
+        {possuiPermissao("campanhas") && (
+          <Link
+            to="/nova-campanha"
+            className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded-md font-medium shadow hover:scale-105 transition"
+          >
+            Nova Campanha
+          </Link>
+        )}
+        {possuiPermissao("publicacoes") && (
+          <Link
+            to="/nova-publicacao"
+            className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded-md font-medium shadow hover:scale-105 transition"
+          >
+            Nova Publicação
+          </Link>
+        )}
+        {possuiPermissao("publico") && (
+          <Link
+            to="/publicos-alvo"
+            className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded-md font-medium shadow hover:scale-105 transition"
+          >
+            Públicos Alvo
+          </Link>
+        )}
+      </nav>
 
       <Routes>
         <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
