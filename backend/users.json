@@ -1,5 +1,21 @@
 [
   {
+    "username": "Caroline",
+    "password": "Carol@123",
+    "email": "atendimento3@radhamoveis.com.br",
+    "nome": "Caroline Pinto",
+    "cargo": "Marketing",
+    "permissoes": ["chat"]
+  },
+  {
+    "username": "Daniela",
+    "password": "Dani@123",
+    "email": "gerenciacomercial@radhamoveis.com.br",
+    "nome": "Daniela Pozzebon",
+    "cargo": "Marketing",
+    "permissoes": ["chat"]
+  },
+  {
     "username": "Luisa",
     "password": "Lu@123",
     "email": "comercial@radhamoveis.com.br",
