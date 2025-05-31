@@ -14,16 +14,15 @@ function NovaPublicacao() {
   setResposta('');
   try {
     const resultado = await fetchComAuth('/nova-publicacao', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tema,
-        objetivo,
-        formato,
-        quantidade: parseInt(quantidade),
-        id_assistant: null
-      })
-    });
+  method: 'POST',
+  body: JSON.stringify({
+    tema,
+    objetivo,
+    formato,
+    quantidade: parseInt(quantidade),
+    id_assistant: null
+  })
+});
     setResposta(resultado.publicacao);
   } catch (err) {
     if (err instanceof Error) {
