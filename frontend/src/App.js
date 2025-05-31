@@ -65,39 +65,43 @@ function App() {
       </div>
 
       <nav className="flex gap-4 justify-center mb-6">
-        {possuiPermissao("chat") && (
-          <Link
-            to="/"
-            className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded-md font-medium shadow hover:scale-105 transition"
-          >
-            Assistente Sara
-          </Link>
-        )}
-        {possuiPermissao("campanhas") && (
-          <Link
-            to="/nova-campanha"
-            className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded-md font-medium shadow hover:scale-105 transition"
-          >
-            Nova Campanha
-          </Link>
-        )}
-        {possuiPermissao("publicacoes") && (
-          <Link
-            to="/nova-publicacao"
-            className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded-md font-medium shadow hover:scale-105 transition"
-          >
-            Nova Publicação
-          </Link>
-        )}
-        {possuiPermissao("publico") && (
-          <Link
-            to="/publicos-alvo"
-            className="bg-[#007b1b] text-[#d1f293] px-4 py-2 rounded-md font-medium shadow hover:scale-105 transition"
-          >
-            Públicos Alvo
-          </Link>
-        )}
-      </nav>
+  {possuiPermissao("chat") && (
+    <Link
+      to="/"
+      className="px-4 py-2 rounded-md font-medium shadow"
+      style={{ backgroundColor: "#007b1b", color: "#d1f293" }}
+    >
+      Assistente Sara
+    </Link>
+  )}
+  {possuiPermissao("campanhas") && (
+    <Link
+      to="/nova-campanha"
+      className="px-4 py-2 rounded-md font-medium shadow"
+      style={{ backgroundColor: "#007b1b", color: "#d1f293" }}
+    >
+      Nova Campanha
+    </Link>
+  )}
+  {possuiPermissao("publicacoes") && (
+    <Link
+      to="/nova-publicacao"
+      className="px-4 py-2 rounded-md font-medium shadow"
+      style={{ backgroundColor: "#007b1b", color: "#d1f293" }}
+    >
+      Nova Publicação
+    </Link>
+  )}
+  {possuiPermissao("publico") && (
+    <Link
+      to="/publicos-alvo"
+      className="px-4 py-2 rounded-md font-medium shadow"
+      style={{ backgroundColor: "#007b1b", color: "#d1f293" }}
+    >
+      Públicos Alvo
+    </Link>
+  )}
+</nav>
 
       <Routes>
         <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
