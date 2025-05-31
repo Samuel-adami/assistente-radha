@@ -1,32 +1,27 @@
 # backend/security.py
 
-from fastapi import Header, HTTPException, Depends
-from typing import List
-import json
-import os
+from fastapi import Header, HTTPException
+from jose import JWTError, jwt
+from typing import List, Optional
+from services.auth_service import SECRET_KEY, ALGORITHM, decodificar_token
 
-USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
-
-def verificar_autenticacao(cargos_permitidos: List[str]):
+def verificar_autenticacao(cargos_permitidos: Optional[List[str]] = None):
     def verificar(authorization: str = Header(...)):
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Formato inválido de token")
+
+        token = authorization.split(" ")[1]
+
         try:
-            username, password = authorization.split(":")
-        except ValueError:
-            raise HTTPException(status_code=401, detail="Formato inválido de autenticação. Use 'username:senha'.")
+            payload = decodificar_token(token)
+            if not payload:
+                raise HTTPException(status_code=401, detail="Token inválido ou expirado")
 
-        if not os.path.exists(USERS_FILE):
-            raise HTTPException(status_code=500, detail="Arquivo de usuários não encontrado.")
+            if cargos_permitidos and payload.get("cargo") not in cargos_permitidos:
+                raise HTTPException(status_code=403, detail="Permissão insuficiente")
 
-        with open(USERS_FILE, "r", encoding="utf-8") as f:
-            users = json.load(f)
+            return payload  # Esse será o 'usuario' retornado às rotas protegidas
 
-        user = next((u for u in users if u["username"] == username and u["password"] == password), None)
-
-        if not user:
-            raise HTTPException(status_code=403, detail="Credenciais inválidas.")
-
-        if user["cargo"] not in cargos_permitidos:
-            raise HTTPException(status_code=403, detail="Permissão insuficiente para esta rota.")
-
-        return user  # Retorna o dicionário do usuário autenticado
+        except JWTError:
+            raise HTTPException(status_code=403, detail="Erro ao processar o token")
     return verificar
