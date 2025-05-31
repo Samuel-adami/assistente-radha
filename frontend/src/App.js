@@ -50,7 +50,19 @@ function App() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Assistente Radha - Painel</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Assistente Radha - Painel</h1>
+        <button
+          onClick={() => {
+            localStorage.clear();
+            setUsuarioLogado(null);
+            navigate("/login");
+          }}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Sair
+        </button>
+      </div>
 
       <nav className="space-x-4 mb-6">
         {possuiPermissao("chat") && <Link to="/" className="text-blue-500 hover:underline">Chat</Link>}
