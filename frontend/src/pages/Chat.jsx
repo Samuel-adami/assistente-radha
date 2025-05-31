@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { fetchComAuth } from '../utils/fetchComAuth';
 
-function Chat() {
+function Chat({ usuarioLogado }) {
   const [mensagem, setMensagem] = useState('');
   const [conversas, setConversas] = useState([]);
   const [erro, setErro] = useState('');
 
-  const id_assistant = "asst_OuBtdCCByhjfqPFPZwMK6d9y"; // Defina o ID do seu assistente
+  const id_assistant = "asst_OuBtdCCByhjfqPFPZwMK6d9y";
 
   const enviarMensagem = async () => {
     if (!mensagem.trim()) return;
@@ -20,7 +20,7 @@ function Chat() {
       const resultado = await fetchComAuth('/chat', {
         method: 'POST',
         body: JSON.stringify({ mensagem, id_assistant })
-      });
+      }, usuarioLogado.token);
 
       setConversas((prev) => {
         const atualizadas = [...prev];
