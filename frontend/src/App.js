@@ -20,31 +20,9 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const userData = localStorage.getItem("usuario");
-
-    if (token && userData) {
-      fetch("https://sara.radhadigital.com.br/auth/validate", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error("Token inválido");
-          return res.json();
-        })
-        .then(() => {
-          setUsuarioLogado(JSON.parse(userData));
-        })
-        .catch(() => {
-          localStorage.clear();
-          navigate("/login");
-        })
-        .finally(() => setCarregando(false));
-    } else {
-      setCarregando(false);
-    }
+    // Limpa o localStorage e força login sempre que o app for iniciado
+    localStorage.clear();
+    setCarregando(false);
   }, []);
 
   const possuiPermissao = (rota) => {
