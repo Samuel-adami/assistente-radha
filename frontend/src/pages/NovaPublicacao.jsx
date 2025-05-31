@@ -10,18 +10,30 @@ function NovaPublicacao() {
   const [erro, setErro] = useState('');
 
   const enviar = async () => {
-    setErro('');
-    setResposta('');
-    try {
-      const resultado = await fetchComAuth('/nova-publicacao', {
-        method: 'POST',
-        body: JSON.stringify({ tema, objetivo, formato, quantidade, id_assistant: null })
-      });
-      setResposta(resultado.publicacao);
-    } catch (err) {
+  setErro('');
+  setResposta('');
+  try {
+    const resultado = await fetchComAuth('/nova-publicacao', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tema,
+        objetivo,
+        formato,
+        quantidade: parseInt(quantidade),
+        id_assistant: null
+      })
+    });
+    setResposta(resultado.publicacao);
+  } catch (err) {
+    if (err instanceof Error) {
       setErro(err.message);
+    } else {
+      setErro(JSON.stringify(err));
     }
-  };
+  }
+};
+
 
   return (
     <div className="p-6">
