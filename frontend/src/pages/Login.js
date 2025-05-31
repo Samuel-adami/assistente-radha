@@ -23,9 +23,9 @@ function Login({ setUsuarioLogado }) {
 
       const data = await response.json();
 
-      // ✅ Atualiza apenas o estado interno, não usa localStorage
-      setUsuarioLogado(data.usuario);
-      navigate("/");  // Redireciona para o painel principal
+      // ✅ Inclui o token no estado
+      setUsuarioLogado({ ...data.usuario, token: data.access_token });
+      navigate("/");
     } catch (err) {
       setErro(err.message);
     }
