@@ -92,3 +92,6 @@ Ser referência nacional em móveis planejados de alto padrão.
 - Simonetto
 - Italinea
   
+# Significado do nome Radha
+
+- Os fundadores se inspiraram na cultura hindu, onde o nome Radha significa "prosperidade", "sucesso", "perfeição" e "riqueza".
