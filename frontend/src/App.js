@@ -51,7 +51,7 @@ function App() {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Assistente Radha - Painel</h1>
+        <h1 className="text-2xl font-bold">Radha One</h1>
         <button
           onClick={() => {
             localStorage.clear();
