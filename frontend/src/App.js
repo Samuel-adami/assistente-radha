@@ -20,8 +20,8 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Limpa o localStorage e força login sempre que o app for iniciado
-    localStorage.clear();
+    localStorage.clear(); // limpa o storage em cada carregamento
+    setUsuarioLogado(null);
     setCarregando(false);
   }, []);
 
@@ -53,42 +53,18 @@ function App() {
       <h1 className="text-2xl font-bold mb-4">Assistente Radha - Painel</h1>
 
       <nav className="space-x-4 mb-6">
-        {usuarioLogado && possuiPermissao("chat") && (
-          <Link to="/" className="text-blue-500 hover:underline">Chat</Link>
-        )}
-        {usuarioLogado && possuiPermissao("campanhas") && (
-          <Link to="/nova-campanha" className="text-blue-500 hover:underline">Nova Campanha</Link>
-        )}
-        {usuarioLogado && possuiPermissao("publicacoes") && (
-          <Link to="/nova-publicacao" className="text-blue-500 hover:underline">Nova Publicação</Link>
-        )}
-        {usuarioLogado && possuiPermissao("publico") && (
-          <Link to="/publicos-alvo" className="text-blue-500 hover:underline">Públicos Alvo</Link>
-        )}
+        {possuiPermissao("chat") && <Link to="/" className="text-blue-500 hover:underline">Chat</Link>}
+        {possuiPermissao("campanhas") && <Link to="/nova-campanha" className="text-blue-500 hover:underline">Nova Campanha</Link>}
+        {possuiPermissao("publicacoes") && <Link to="/nova-publicacao" className="text-blue-500 hover:underline">Nova Publicação</Link>}
+        {possuiPermissao("publico") && <Link to="/publicos-alvo" className="text-blue-500 hover:underline">Públicos Alvo</Link>}
       </nav>
 
       <Routes>
         <Route path="/login" element={<Login setUsuarioLogado={setUsuarioLogado} />} />
-        <Route path="/" element={
-          <ProtectedRoute permissao="chat">
-            <Chat usuarioLogado={usuarioLogado} />
-          </ProtectedRoute>
-        } />
-        <Route path="/nova-campanha" element={
-          <ProtectedRoute permissao="campanhas">
-            <NovaCampanha usuarioLogado={usuarioLogado} />
-          </ProtectedRoute>
-        } />
-        <Route path="/nova-publicacao" element={
-          <ProtectedRoute permissao="publicacoes">
-            <NovaPublicacao usuarioLogado={usuarioLogado} />
-          </ProtectedRoute>
-        } />
-        <Route path="/publicos-alvo" element={
-          <ProtectedRoute permissao="publico">
-            <PublicosAlvo usuarioLogado={usuarioLogado} />
-          </ProtectedRoute>
-        } />
+        <Route path="/" element={<ProtectedRoute permissao="chat"><Chat usuarioLogado={usuarioLogado} /></ProtectedRoute>} />
+        <Route path="/nova-campanha" element={<ProtectedRoute permissao="campanhas"><NovaCampanha usuarioLogado={usuarioLogado} /></ProtectedRoute>} />
+        <Route path="/nova-publicacao" element={<ProtectedRoute permissao="publicacoes"><NovaPublicacao usuarioLogado={usuarioLogado} /></ProtectedRoute>} />
+        <Route path="/publicos-alvo" element={<ProtectedRoute permissao="publico"><PublicosAlvo usuarioLogado={usuarioLogado} /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>
