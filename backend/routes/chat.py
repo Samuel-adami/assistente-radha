@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from services.openai_service import gerar_resposta
 from services.embedding_service import buscar_contexto
@@ -15,6 +15,9 @@ async def conversar(
     input: ChatInput,
     usuario=Depends(verificar_autenticacao(["Diretoria", "Marketing", "Comercial", "Logística"]))
 ):
+    if not input.id_assistant:
+        raise HTTPException(status_code=400, detail="ID do assistente é obrigatório.")
+
     # 🔎 Buscar contexto relevante da base de conhecimento
     contexto = buscar_contexto(input.mensagem)
     print("📚 Contexto carregado:\n", contexto)
