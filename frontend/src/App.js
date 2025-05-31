@@ -68,7 +68,7 @@ function App() {
         {possuiPermissao("chat") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Chat</Link>
         {possuiPermissao("campanhas") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Nova Campanha</Link>
         {possuiPermissao("publicacoes") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Nova Publicação</Link>
-        {possuiPermissao("publico") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Cadastro de Públicos Alvo</Link>
+        {possuiPermissao("publico") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Públicos Alvo</Link>
       </nav>
 
       <Routes>
