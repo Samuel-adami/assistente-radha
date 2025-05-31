@@ -9,7 +9,7 @@ function Chat() {
   const [erro, setErro] = useState('');
 
   // Defina aqui o ID do assistente (fixo ou dinâmico)
-  const id_assistant = "radha_sara_assistente"; // Substitua por seu ID real
+  const id_assistant = "asst_OuBtdCCByhjfqPFPZwMK6d9y"; // Substitua por seu ID real
 
   const enviarMensagem = async () => {
     try {
