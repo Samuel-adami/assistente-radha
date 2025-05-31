@@ -8,29 +8,28 @@ function Login({ setUsuarioLogado }) {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await fetch('https://sara.radhadigital.com.br/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username, password })
-    });
+    try {
+      const response = await fetch('https://sara.radhadigital.com.br/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
 
-    if (!response.ok) throw new Error('Usuário ou senha inválidos');
+      if (!response.ok) throw new Error('Usuário ou senha inválidos');
 
-    const data = await response.json();
+      const data = await response.json();
 
-    setUsuarioLogado(data.usuario);
-    localStorage.setItem("authToken", data.access_token);
-    localStorage.setItem("usuario", JSON.stringify(data.usuario));
-    window.location.href = "/";
-  } catch (err) {
-    setErro(err.message);
-  }
-};
+      // ✅ Atualiza apenas o estado interno, não usa localStorage
+      setUsuarioLogado(data.usuario);
+      navigate("/");  // Redireciona para o painel principal
+    } catch (err) {
+      setErro(err.message);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-6">
