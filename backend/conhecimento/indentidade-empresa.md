@@ -84,3 +84,11 @@ Ser referência nacional em móveis planejados de alto padrão.
 - Arquitetos e designers de interiores  
 - Empresas que buscam mobiliário corporativo sofisticado  
 - Clientes que valorizam personalização e exclusividade
+
+# Concorrentes
+
+- Conforto Móveis
+- Ritter Móveis
+- Simonetto
+- Italinea
+  
