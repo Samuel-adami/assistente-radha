@@ -1,4 +1,4 @@
-// ✅ Exemplo de uso do fetchComAuth no Chat.jsx
+// ✅ Chat.jsx com id_assistant incluso
 
 import React, { useState } from 'react';
 import { fetchComAuth } from '../utils/fetchComAuth';
@@ -8,15 +8,23 @@ function Chat() {
   const [resposta, setResposta] = useState('');
   const [erro, setErro] = useState('');
 
+  // Defina aqui o ID do assistente (fixo ou dinâmico)
+  const id_assistant = "radha_sara_assistente"; // Substitua por seu ID real
+
   const enviarMensagem = async () => {
     try {
       const resultado = await fetchComAuth('/chat', {
         method: 'POST',
-        body: JSON.stringify({ mensagem })
+        body: JSON.stringify({
+          mensagem,
+          id_assistant
+        })
       });
       setResposta(resultado.resposta || JSON.stringify(resultado));
+      setErro('');
     } catch (err) {
       setErro(err.message);
+      setResposta('');
     }
   };
 
