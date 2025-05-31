@@ -32,6 +32,16 @@ function NovaPublicacao() {
     }
   };
 
+  const baixarResposta = () => {
+    const blob = new Blob([resposta], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'publicacao_radha.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Nova Publicação</h1>
@@ -71,12 +81,23 @@ function NovaPublicacao() {
         min="1"
       />
 
-      <button
-        onClick={enviar}
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-      >
-        Criar Publicação
-      </button>
+      <div className="flex gap-4">
+        <button
+          onClick={enviar}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Criar Publicação
+        </button>
+
+        {resposta && (
+          <button
+            onClick={baixarResposta}
+            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+          >
+            Baixar Publicação
+          </button>
+        )}
+      </div>
 
       {resposta && (
         <div className="mt-4 p-4 bg-green-100 text-green-800 rounded whitespace-pre-wrap">
