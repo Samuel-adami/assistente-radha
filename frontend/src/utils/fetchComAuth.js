@@ -1,20 +1,18 @@
-export async function fetchComAuth(url, options = {}) {
-  const token = localStorage.getItem("authToken");
-
+export async function fetchComAuth(endpoint, options = {}, token) {
   const headers = {
-    ...options.headers,
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json"
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
 
-  const response = await fetch(url, {
+  const response = await fetch(`https://sara.radhadigital.com.br${endpoint}`, {
     ...options,
-    headers
+    headers,
   });
 
   if (!response.ok) {
-    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+    const errorData = await response.json();
+    throw new Error(errorData.detail || 'Erro na requisição');
   }
 
-  return await response.json();
+  return response.json();
 }
