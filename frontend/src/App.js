@@ -51,7 +51,7 @@ function App() {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Radha One</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center text-green-900">Radha One</h1>
         <button
           onClick={() => {
             localStorage.clear();
@@ -65,10 +65,10 @@ function App() {
       </div>
 
       <nav className="space-x-4 mb-6">
-        {possuiPermissao("chat") && <Link to="/" className="text-blue-500 hover:underline">Chat</Link>}
-        {possuiPermissao("campanhas") && <Link to="/nova-campanha" className="text-blue-500 hover:underline">Nova Campanha</Link>}
-        {possuiPermissao("publicacoes") && <Link to="/nova-publicacao" className="text-blue-500 hover:underline">Nova Publicação</Link>}
-        {possuiPermissao("publico") && <Link to="/publicos-alvo" className="text-blue-500 hover:underline">Públicos Alvo</Link>}
+        {possuiPermissao("chat") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Chat</Link>
+        {possuiPermissao("campanhas") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Nova Campanha</Link>
+        {possuiPermissao("publicacoes") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Nova Publicação</Link>
+        {possuiPermissao("publico") && <Link to="/" className="bg-[#007b1b] text-[#d1f293] px-3 py-1 rounded hover:opacity-90">Cadastro de Públicos Alvo</Link>
       </nav>
 
       <Routes>
