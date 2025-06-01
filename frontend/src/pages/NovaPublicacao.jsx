@@ -18,23 +18,25 @@ function NovaPublicacao() {
       objetivo,
       formato,
       quantidade: parseInt(quantidade) || 1,
-      id_assistant: ''
+      id_assistant: 'asst_OuBtdCCByhjfqPFPZwMK6d9y'
     };
 
     try {
       const resultado = await fetchComAuth('/nova-publicacao', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
       });
+
       setResposta(resultado.publicacao);
     } catch (err) {
-      if (err instanceof Error) {
-        setErro(err.message);
+      if (err instanceof Response) {
+        const mensagem = await err.text();
+        setErro(`Erro do servidor: ${mensagem}`);
+      } else if (err instanceof Error) {
+        setErro(`Erro: ${err.message}`);
       } else {
-        setErro(JSON.stringify(err));
+        setErro('Erro inesperado ao processar a publicação.');
       }
     }
   };
@@ -99,7 +101,7 @@ function NovaPublicacao() {
 
       {erro && (
         <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
-          Erro: {erro}
+          {erro}
         </div>
       )}
     </div>
