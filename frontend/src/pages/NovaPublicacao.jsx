@@ -21,7 +21,8 @@ function NovaPublicacao() {
       objetivo,
       formato,
       quantidade: parseInt(quantidade) || 1,
-      id_assistant: ''
+      gerar_imagem: gerarImagem,
+      id_assistant: 'asst_OuBtdCCByhjfqPFPZwMK6d9y'
     };
 
     try {
@@ -34,16 +35,8 @@ function NovaPublicacao() {
       });
 
       setResposta(resultado.publicacao);
-
-      if (gerarImagem) {
-        const imagem = await fetchComAuth('/nova-publicacao/gerar-imagem', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ prompt: resultado.publicacao })
-        });
-        setImagemUrl(imagem.url);
+      if (resultado.imagem_url) {
+        setImagemUrl(resultado.imagem_url);
       }
     } catch (err) {
       setErro(err.message || JSON.stringify(err));
