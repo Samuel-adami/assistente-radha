@@ -11,26 +11,30 @@ function NovaCampanha() {
   const [erro, setErro] = useState('');
 
   const enviar = async () => {
-    try {
-      const dados = {
-        tema,
-        objetivo,
-        publico_alvo: publicoAlvo,
-        orcamento: parseFloat(orcamento),
-        duracao,
-        id_assistant: "asst_OuBtdCCByhjfqPFPZwMK6d9y"
-      };
+    setErro('');
+    setResposta('');
 
+    const dados = {
+      tema,
+      objetivo,
+      publico_alvo: publicoAlvo,
+      orcamento: parseFloat(orcamento) || 0,
+      duracao,
+      id_assistant: 'asst_OuBtdCCByhjfqPFPZwMK6d9y'
+    };
+
+    try {
       const resultado = await fetchComAuth('/nova-campanha', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(dados)
       });
 
       setResposta(resultado.campanha);
-      setErro('');
     } catch (err) {
-      setErro(err.message);
-      setResposta('');
+      setErro(err.message || JSON.stringify(err));
     }
   };
 
@@ -79,8 +83,8 @@ function NovaCampanha() {
       </button>
 
       {resposta && (
-        <div className="mt-4 p-4 bg-green-100 text-green-800 rounded whitespace-pre-wrap">
-          {resposta}
+        <div className="mt-4 p-4 bg-green-100 text-green-900 rounded whitespace-pre-wrap">
+          <strong>Resposta:</strong><br />{resposta}
         </div>
       )}
 
