@@ -8,38 +8,45 @@ function NovaPublicacao() {
   const [quantidade, setQuantidade] = useState(1);
   const [resposta, setResposta] = useState('');
   const [erro, setErro] = useState('');
+  const [gerarImagem, setGerarImagem] = useState(false);
+  const [imagemUrl, setImagemUrl] = useState('');
 
   const enviar = async () => {
     setErro('');
     setResposta('');
+    setImagemUrl('');
 
     const dados = {
       tema,
       objetivo,
       formato,
       quantidade: parseInt(quantidade) || 1,
-      id_assistant: 'asst_OuBtdCCByhjfqPFPZwMK6d9y'
+      id_assistant: ''
     };
 
     try {
-      const resposta = await fetch('/nova-publicacao', {
+      const resultado = await fetchComAuth('/nova-publicacao', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(dados)
       });
 
-      if (!resposta.ok) {
-        const erroJson = await resposta.json();
-        throw new Error(`Erro ${resposta.status}: ${JSON.stringify(erroJson.detail || erroJson)}`);
-      }
-
-      const resultado = await resposta.json();
       setResposta(resultado.publicacao);
+
+      if (gerarImagem) {
+        const imagem = await fetchComAuth('/nova-publicacao/gerar-imagem', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt: resultado.publicacao })
+        });
+        setImagemUrl(imagem.url);
+      }
     } catch (err) {
-      setErro(err.message || 'Erro inesperado');
+      setErro(err.message || JSON.stringify(err));
     }
   };
 
@@ -88,6 +95,18 @@ function NovaPublicacao() {
         placeholder="Quantidade"
       />
 
+      <div className="mb-4">
+        <label className="inline-flex items-center">
+          <input
+            type="checkbox"
+            className="form-checkbox"
+            checked={gerarImagem}
+            onChange={(e) => setGerarImagem(e.target.checked)}
+          />
+          <span className="ml-2">Gerar imagem com IA</span>
+        </label>
+      </div>
+
       <button
         onClick={enviar}
         className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
@@ -101,9 +120,15 @@ function NovaPublicacao() {
         </div>
       )}
 
+      {imagemUrl && (
+        <div className="mt-4">
+          <img src={imagemUrl} alt="Imagem gerada pela IA" className="w-full rounded" />
+        </div>
+      )}
+
       {erro && (
         <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
-          {erro}
+          Erro: {erro}
         </div>
       )}
     </div>
