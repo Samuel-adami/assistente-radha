@@ -66,3 +66,24 @@ async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
     except OpenAIError as e:
         logging.error(f"Erro na API da OpenAI: {e}")
         return "Estamos passando por instabilidades técnicas no momento. Por favor, tente novamente mais tarde."
+
+# ✅ Geração de imagem com DALL·E 3
+async def gerar_imagem(prompt: str) -> str:
+    client = openai.AsyncOpenAI(
+        api_key=openai.api_key,
+        base_url=openai.api_base
+    )
+
+    try:
+        resposta = await client.images.generate(
+            model="dall-e-3",
+            prompt=prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1
+        )
+        return resposta.data[0].url
+
+    except OpenAIError as e:
+        logging.error(f"Erro ao gerar imagem com DALL·E: {e}")
+        return "Erro ao gerar imagem."
