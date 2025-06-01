@@ -23,8 +23,9 @@ function Login({ setUsuarioLogado }) {
 
       const data = await response.json();
 
-      // ✅ Inclui o token no estado
+      localStorage.setItem("token", data.access_token); // ✅ salva token no localStorage
       setUsuarioLogado({ ...data.usuario, token: data.access_token });
+
       navigate("/");
     } catch (err) {
       setErro(err.message);
