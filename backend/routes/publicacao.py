@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from services.openai_service import gerar_resposta
 from security import verificar_autenticacao
+import openai
+import os
 
 router = APIRouter(prefix="/nova-publicacao", tags=["Publicacoes"])
 
@@ -13,6 +15,9 @@ class PublicacaoInput(BaseModel):
     formato: str
     quantidade: int
     id_assistant: str = None
+
+class ImagemInput(BaseModel):
+    prompt: str
 
 @router.post("/")
 async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
@@ -41,7 +46,6 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
             f"2. Sugestão de imagem (incluindo uma cozinha planejada);\n"
             f"3. Sugestão de música sem direitos autorais do Pixabay."
         )
-
     elif formato == "post carrossel":
         corpo = (
             f"Crie {input.quantidade} carrosséis sobre {input.tema}.\n"
@@ -51,7 +55,6 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
             f"3. Sugestão de imagem por slide;\n"
             f"4. Legenda geral com CTA e hashtags (até 300 caracteres)."
         )
-
     elif formato == "reels":
         corpo = (
             f"Crie {input.quantidade} roteiros de Reels sobre {input.tema}.\n"
@@ -61,7 +64,6 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
             f"3. Texto para vídeo (legenda sobreposta);\n"
             f"4. Legenda completa com CTA e hashtags."
         )
-
     elif formato == "story":
         corpo = (
             f"Crie {input.quantidade} roteiros de Story sobre {input.tema}.\n"
@@ -71,7 +73,6 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
             f"3. Sugestão de sticker/interação;\n"
             f"4. Legenda com CTA e hashtags."
         )
-
     else:
         corpo = (
             f"Crie {input.quantidade} conteúdos no formato {input.formato} sobre {input.tema}.\n"
@@ -81,10 +82,25 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
     prompt = introducao + corpo
 
     resposta = await gerar_resposta(
-        prompt, 
-        input.id_assistant, 
-        contexto='publicacao', 
+        prompt,
+        input.id_assistant,
+        contexto='publicacao',
         tema=input.tema
     )
 
     return {"publicacao": resposta}
+
+
+@router.post("/gerar-imagem")
+async def gerar_imagem(input: ImagemInput, user=Depends(autorizacao)):
+    try:
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        response = openai.Image.create(
+            prompt=input.prompt,
+            n=1,
+            size="1024x1024",
+            model="dall-e-3"
+        )
+        return {"url": response['data'][0]['url']}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
