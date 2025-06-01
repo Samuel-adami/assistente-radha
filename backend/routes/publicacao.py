@@ -5,7 +5,6 @@ from security import verificar_autenticacao
 
 router = APIRouter(prefix="/nova-publicacao", tags=["Publicacoes"])
 
-# ✅ Apenas marketing e diretores podem criar publicações
 autorizacao = verificar_autenticacao(["Marketing", "Diretoria"])
 
 class PublicacaoInput(BaseModel):
@@ -19,12 +18,19 @@ class PublicacaoInput(BaseModel):
 async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
     formato = input.formato.lower()
 
+    observacao = ""
+    if input.objetivo.lower() == "engajamento":
+        observacao = (
+            "\n\nObservação: evite tom comercial ou de vendas. "
+            "O conteúdo deve ser informativo, com dicas úteis, e mencionar a Radha de forma leve e natural."
+        )
+
     introducao = (
         f"Você está ajudando {user['nome']} ({user['cargo']}) a planejar conteúdos estratégicos para redes sociais.\n\n"
         f"Tema: {input.tema}\n"
         f"Objetivo: {input.objetivo}\n"
         f"Formato: {input.formato}\n"
-        f"Quantidade: {input.quantidade}\n\n"
+        f"Quantidade: {input.quantidade}{observacao}\n\n"
     )
 
     if formato == "post único":
