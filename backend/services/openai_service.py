@@ -1,19 +1,20 @@
 import os
-from dotenv import load_dotenv
-import openai
 import asyncio
 import logging
-from openai import OpenAIError
+from dotenv import load_dotenv
+from openai import AsyncOpenAI, OpenAIError
 
 from services.embedding_service import buscar_contexto as consultar_conhecimento
 
+# 🔄 Variáveis de ambiente
 load_dotenv()
+API_KEY = os.getenv("OPENAI_API_KEY")
+API_BASE = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
+# 🔧 Cliente OpenAI assíncrono
+client = AsyncOpenAI(api_key=API_KEY, base_url=API_BASE)
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
+# 🧠 Hashtags temáticas para enriquecer prompts
 HASHTAGS_TEMATICAS = {
     "fábrica": ["#FabricaDeMoveis", "#FabricaPropria", "#MovelPlanejado"],
     "cozinha": ["#CozinhaPlanejada", "#DesignDeInteriores"],
@@ -24,16 +25,16 @@ HASHTAGS_TEMATICAS = {
     "corporativo": ["#MoveisCorporativos", "#AmbienteDeTrabalho"],
 }
 
-async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
-    client = openai.AsyncOpenAI(
-        api_key=openai.api_key,
-        base_url=openai.api_base
-    )
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+# 🎯 Geração de texto via Assistente
+async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
+    # 🔎 Vetores de conhecimento
     conhecimento = consultar_conhecimento(prompt)
     if conhecimento:
         prompt = f"{conhecimento}\n\nUsuário: {prompt}"
 
+    # 📌 Ajusta prompt com instruções adicionais
     if contexto in ["publicacao", "campanha"]:
         partes_prompt = ["Inclua hashtags relacionadas ao tema e que reforcem os diferenciais da Radha."]
         if tema:
@@ -50,9 +51,10 @@ async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
         await client.beta.threads.messages.create(thread_id=thread.id, role="user", content=prompt)
         run = await client.beta.threads.runs.create(thread_id=thread.id, assistant_id=id_assistant)
 
+        # 🕒 Aguardar conclusão
         while True:
-            run_status = await client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
-            if run_status.status == "completed":
+            status = await client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+            if status.status == "completed":
                 break
             await asyncio.sleep(1)
 
@@ -61,19 +63,15 @@ async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
             msg.content[0].text.value.strip()
             for msg in messages.data if msg.role == "assistant"
         ]
+
         return "\n\n".join(respostas) if respostas else "Não foi possível obter uma resposta do assistente."
 
     except OpenAIError as e:
         logging.error(f"Erro na API da OpenAI: {e}")
         return "Estamos passando por instabilidades técnicas no momento. Por favor, tente novamente mais tarde."
 
-# ✅ Geração de imagem com DALL·E 3
+# 🎨 Geração de imagem com DALL·E 3
 async def gerar_imagem(prompt: str) -> str:
-    client = openai.AsyncOpenAI(
-        api_key=openai.api_key,
-        base_url=openai.api_base
-    )
-
     try:
         resposta = await client.images.generate(
             model="dall-e-3",
