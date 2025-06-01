@@ -22,24 +22,24 @@ function NovaPublicacao() {
     };
 
     try {
-      const resultado = await fetchComAuth('/nova-publicacao', {
+      const resposta = await fetch('/nova-publicacao', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(dados)
       });
 
-      if (!resultado.ok) {
-        const erroDetalhado = await resultado.json();
-        setErro(`Erro ${resultado.status}: ${erroDetalhado.detail || 'Erro desconhecido.'}`);
-        return;
+      if (!resposta.ok) {
+        const erroJson = await resposta.json();
+        throw new Error(`Erro ${resposta.status}: ${JSON.stringify(erroJson.detail || erroJson)}`);
       }
 
-      const dadosResposta = await resultado.json();
-      setResposta(dadosResposta.publicacao);
+      const resultado = await resposta.json();
+      setResposta(resultado.publicacao);
     } catch (err) {
-      setErro(`Erro ao enviar a publicação: ${err.message}`);
+      setErro(err.message || 'Erro inesperado');
     }
   };
 
