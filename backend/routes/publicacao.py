@@ -1,9 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from services.openai_service import gerar_resposta
+from services.openai_service import gerar_resposta, gerar_imagem
 from security import verificar_autenticacao
-import openai
-import os
 
 router = APIRouter(prefix="/nova-publicacao", tags=["Publicacoes"])
 
@@ -14,10 +12,8 @@ class PublicacaoInput(BaseModel):
     objetivo: str
     formato: str
     quantidade: int
+    gerar_imagem: bool = False
     id_assistant: str = None
-
-class ImagemInput(BaseModel):
-    prompt: str
 
 @router.post("/")
 async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
@@ -43,7 +39,7 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
             f"Crie {input.quantidade} publicações no formato post único sobre {input.tema}. "
             f"Para cada uma, elabore:\n"
             f"1. Legenda com CTA e hashtags;\n"
-            f"2. Sugestão de imagem (incluindo uma cozinha planejada);\n"
+            f"2. Sugestão de imagem (realista e sofisticada);\n"
             f"3. Sugestão de música sem direitos autorais do Pixabay."
         )
     elif formato == "post carrossel":
@@ -52,7 +48,7 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
             f"Para cada carrossel, elabore:\n"
             f"1. Título impactante;\n"
             f"2. Texto para cada slide (máx. 100 caracteres);\n"
-            f"3. Sugestão de imagem por slide;\n"
+            f"3. Sugestão de imagem por slide (realista e sofisticada);\n"
             f"4. Legenda geral com CTA e hashtags (até 300 caracteres)."
         )
     elif formato == "reels":
@@ -88,19 +84,12 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
         tema=input.tema
     )
 
-    return {"publicacao": resposta}
+    imagem_url = None
+    if input.gerar_imagem:
+        imagem_prompt = f"{input.tema} com ambientação realista e estilo sofisticado, cenário moderno, luz suave"
+        imagem_url = await gerar_imagem(imagem_prompt)
 
-
-@router.post("/gerar-imagem")
-async def gerar_imagem(input: ImagemInput, user=Depends(autorizacao)):
-    try:
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        response = openai.Image.create(
-            prompt=input.prompt,
-            n=1,
-            size="1024x1024",
-            model="dall-e-3"
-        )
-        return {"url": response['data'][0]['url']}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return {
+        "publicacao": resposta,
+        "imagem_url": imagem_url
+    }
