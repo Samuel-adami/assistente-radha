@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchComAuth } from '../utils/fetchComAuth';
 
 function NovaCampanha() {
   const [tema, setTema] = useState('');
   const [objetivo, setObjetivo] = useState('');
   const [publicoAlvo, setPublicoAlvo] = useState('');
+  const [publicosAlvo, setPublicosAlvo] = useState([]);
   const [orcamento, setOrcamento] = useState('');
   const [duracao, setDuracao] = useState('');
   const [resposta, setResposta] = useState('');
   const [erro, setErro] = useState('');
+
+  useEffect(() => {
+    const carregarPublicosAlvo = async () => {
+      try {
+        const dados = await fetchComAuth('/publicos-alvo');
+        setPublicosAlvo(dados);
+      } catch (err) {
+        setErro('Erro ao carregar públicos-alvo: ' + err.message);
+      }
+    };
+
+    carregarPublicosAlvo();
+  }, []);
 
   const enviar = async () => {
     setErro('');
@@ -48,18 +62,32 @@ function NovaCampanha() {
         value={tema}
         onChange={(e) => setTema(e.target.value)}
       />
-      <input
+
+      <select
         className="w-full border rounded px-3 py-2 mb-2"
-        placeholder="Objetivo"
         value={objetivo}
         onChange={(e) => setObjetivo(e.target.value)}
-      />
-      <input
+      >
+        <option value="">Selecione o Objetivo</option>
+        <option value="Engajamento">Engajamento</option>
+        <option value="Reconhecimento de Marca">Reconhecimento de Marca</option>
+        <option value="Conversões">Conversões</option>
+        <option value="Lançamento de Produto">Lançamento de Produto</option>
+      </select>
+
+      <select
         className="w-full border rounded px-3 py-2 mb-2"
-        placeholder="Público-alvo"
         value={publicoAlvo}
         onChange={(e) => setPublicoAlvo(e.target.value)}
-      />
+      >
+        <option value="">Selecione o Público-Alvo</option>
+        {publicosAlvo.map((publico) => (
+          <option key={publico.id} value={publico.nome}>
+            {publico.nome}
+          </option>
+        ))}
+      </select>
+
       <input
         type="number"
         step="0.01"
@@ -68,6 +96,7 @@ function NovaCampanha() {
         value={orcamento}
         onChange={(e) => setOrcamento(e.target.value)}
       />
+
       <input
         className="w-full border rounded px-3 py-2 mb-2"
         placeholder="Duração"
