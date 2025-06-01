@@ -30,16 +30,16 @@ function NovaPublicacao() {
         body: JSON.stringify(dados)
       });
 
-      setResposta(resultado.publicacao);
-    } catch (err) {
-      if (err instanceof Response) {
-        const mensagem = await err.text();
-        setErro(`Erro do servidor: ${mensagem}`);
-      } else if (err instanceof Error) {
-        setErro(`Erro: ${err.message}`);
-      } else {
-        setErro('Erro inesperado ao processar a publicação.');
+      if (!resultado.ok) {
+        const erroDetalhado = await resultado.json();
+        setErro(`Erro ${resultado.status}: ${erroDetalhado.detail || 'Erro desconhecido.'}`);
+        return;
       }
+
+      const dadosResposta = await resultado.json();
+      setResposta(dadosResposta.publicacao);
+    } catch (err) {
+      setErro(`Erro ao enviar a publicação: ${err.message}`);
     }
   };
 
