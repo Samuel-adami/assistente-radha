@@ -74,7 +74,7 @@ function Chat({ usuarioLogado }) {
       <div className="flex items-center gap-4">
         <button
           onClick={enviarMensagem}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-red-800 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Enviar
         </button>
