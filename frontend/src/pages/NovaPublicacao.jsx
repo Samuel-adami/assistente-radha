@@ -21,8 +21,7 @@ function NovaPublicacao() {
       objetivo,
       formato,
       quantidade: parseInt(quantidade) || 1,
-      gerar_imagem: gerarImagem,
-      id_assistant: 'asst_OuBtdCCByhjfqPFPZwMK6d9y'
+      id_assistant: ''
     };
 
     try {
@@ -35,8 +34,17 @@ function NovaPublicacao() {
       });
 
       setResposta(resultado.publicacao);
-      if (resultado.imagem_url) {
-        setImagemUrl(resultado.imagem_url);
+
+      if (gerarImagem && formato === 'post carrossel') {
+        const textoImagem = resultado.publicacao.split('\n')[0].trim();
+        const imagem = await fetchComAuth('/nova-publicacao/gerar-imagem', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt: resultado.publicacao, texto: textoImagem })
+        });
+        setImagemUrl(imagem.imagem);
       }
     } catch (err) {
       setErro(err.message || JSON.stringify(err));
@@ -102,7 +110,7 @@ function NovaPublicacao() {
 
       <button
         onClick={enviar}
-        className="bg-purple-900 text-white px-4 py-2 rounded hover:bg-green-700"
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
       >
         Criar Publicação
       </button>
