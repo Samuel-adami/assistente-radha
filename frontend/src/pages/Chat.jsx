@@ -58,7 +58,7 @@ function Chat({ usuarioLogado }) {
         {conversas.map((c, index) => (
           <div key={index} className="bg-gray-100 p-4 rounded">
             <p><strong>Pergunta:</strong> {c.pergunta}</p>
-            <p className="mt-2 text-green-800"><strong>Resposta:</strong> {c.resposta}</p>
+            <p className="mt-2 text-purple-700"><strong>Resposta:</strong> {c.resposta}</p>
           </div>
         ))}
       </div>
