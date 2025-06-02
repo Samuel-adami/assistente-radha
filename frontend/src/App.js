@@ -69,7 +69,7 @@ function App() {
     <Link
       to="/"
       className="px-4 py-2 rounded-md font-medium shadow"
-      style={{ backgroundColor: "#85e29a", color: "#d1f293" }}
+      style={{ backgroundColor: "#570b01", color: "#ffffff" }}
     >
       Assistente Sara
     </Link>
@@ -78,7 +78,7 @@ function App() {
     <Link
       to="/nova-campanha"
       className="px-4 py-2 rounded-md font-medium shadow"
-      style={{ backgroundColor: "#85e29a", color: "#d1f293" }}
+      style={{ backgroundColor: "#570b01", color: "#ffffff" }}
     >
       Nova Campanha
     </Link>
@@ -87,7 +87,7 @@ function App() {
     <Link
       to="/nova-publicacao"
       className="px-4 py-2 rounded-md font-medium shadow"
-      style={{ backgroundColor: "#85e29a", color: "#d1f293" }}
+      style={{ backgroundColor: "#570b01", color: "#ffffff" }}
     >
       Nova Publicação
     </Link>
@@ -96,7 +96,7 @@ function App() {
     <Link
       to="/publicos-alvo"
       className="px-4 py-2 rounded-md font-medium shadow"
-      style={{ backgroundColor: "#85e29a", color: "#d1f293" }}
+      style={{ backgroundColor: "#570b01", color: "#ffffff  " }}
     >
       Públicos Alvo
     </Link>
