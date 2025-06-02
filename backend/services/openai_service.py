@@ -31,7 +31,7 @@ HASHTAGS_TEMATICAS = {
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# 🎯 Geração de texto via Assistente
+# 🌟 Geração de texto via Assistente
 async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
     conhecimento = consultar_conhecimento(prompt)
     if conhecimento:
@@ -91,21 +91,34 @@ async def gerar_imagem(prompt: str) -> str:
 def gerar_imagem_com_texto(imagem_url: str, texto: str) -> str:
     try:
         response = requests.get(imagem_url)
-        imagem = Image.open(BytesIO(response.content))
-
-        draw = ImageDraw.Draw(imagem)
+        imagem = Image.open(BytesIO(response.content)).convert("RGBA")
         largura, altura = imagem.size
 
-        fonte = ImageFont.load_default()
-        margem = 20
+        # Fundo da imagem para transparência
+        txt_layer = Image.new("RGBA", imagem.size, (255, 255, 255, 0))
+        draw = ImageDraw.Draw(txt_layer)
 
-        draw.text((margem, altura - 60), texto, font=fonte, fill="white")
+        # Fonte com fallback
+        try:
+            fonte = ImageFont.truetype("DejaVuSans-Bold.ttf", size=40)
+        except:
+            fonte = ImageFont.load_default()
+
+        # Tamanho do texto
+        text_width, text_height = draw.textsize(texto, font=fonte)
+        x = (largura - text_width) / 2
+        y = altura - text_height - 40
+
+        # Sombra
+        draw.text((x+2, y+2), texto, font=fonte, fill="black")
+        # Texto
+        draw.text((x, y), texto, font=fonte, fill="white")
+
+        imagem_final = Image.alpha_composite(imagem, txt_layer)
 
         buffer = BytesIO()
-        imagem.save(buffer, format="PNG")
-        buffer.seek(0)
+        imagem_final.save(buffer, format="PNG")
         imagem_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
-
         return f"data:image/png;base64,{imagem_base64}"
 
     except Exception as e:
