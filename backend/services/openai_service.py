@@ -3,6 +3,10 @@ import asyncio
 import logging
 from dotenv import load_dotenv
 from openai import AsyncOpenAI, OpenAIError
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
+import base64
+import requests
 
 from services.embedding_service import buscar_contexto as consultar_conhecimento
 
@@ -29,12 +33,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 # 🎯 Geração de texto via Assistente
 async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
-    # 🔎 Vetores de conhecimento
     conhecimento = consultar_conhecimento(prompt)
     if conhecimento:
         prompt = f"{conhecimento}\n\nUsuário: {prompt}"
 
-    # 📌 Ajusta prompt com instruções adicionais
     if contexto in ["publicacao", "campanha"]:
         partes_prompt = ["Inclua hashtags relacionadas ao tema e que reforcem os diferenciais da Radha."]
         if tema:
@@ -51,7 +53,6 @@ async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
         await client.beta.threads.messages.create(thread_id=thread.id, role="user", content=prompt)
         run = await client.beta.threads.runs.create(thread_id=thread.id, assistant_id=id_assistant)
 
-        # 🕒 Aguardar conclusão
         while True:
             status = await client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
             if status.status == "completed":
@@ -85,3 +86,28 @@ async def gerar_imagem(prompt: str) -> str:
     except OpenAIError as e:
         logging.error(f"Erro ao gerar imagem com DALL·E: {e}")
         return "Erro ao gerar imagem."
+
+# 🖼️ Geração de imagem com texto sobreposto manualmente
+def gerar_imagem_com_texto(imagem_url: str, texto: str) -> str:
+    try:
+        response = requests.get(imagem_url)
+        imagem = Image.open(BytesIO(response.content))
+
+        draw = ImageDraw.Draw(imagem)
+        largura, altura = imagem.size
+
+        fonte = ImageFont.load_default()
+        margem = 20
+
+        draw.text((margem, altura - 60), texto, font=fonte, fill="white")
+
+        buffer = BytesIO()
+        imagem.save(buffer, format="PNG")
+        buffer.seek(0)
+        imagem_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+        return f"data:image/png;base64,{imagem_base64}"
+
+    except Exception as e:
+        logging.error(f"Erro ao sobrepor texto: {e}")
+        return ""
