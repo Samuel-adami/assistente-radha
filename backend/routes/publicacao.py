@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from services.openai_service import gerar_resposta, gerar_imagem
+from services.openai_service import gerar_resposta, gerar_imagem, gerar_imagem_com_texto
 from security import verificar_autenticacao
+import os
 
 router = APIRouter(prefix="/nova-publicacao", tags=["Publicacoes"])
 
@@ -12,8 +13,11 @@ class PublicacaoInput(BaseModel):
     objetivo: str
     formato: str
     quantidade: int
-    gerar_imagem: bool = False
     id_assistant: str = None
+
+class ImagemInput(BaseModel):
+    prompt: str
+    texto: str = None  # opcional
 
 @router.post("/")
 async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
@@ -39,17 +43,14 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
             f"Crie {input.quantidade} publicações no formato post único sobre {input.tema}. "
             f"Para cada uma, elabore:\n"
             f"1. Legenda com CTA e hashtags;\n"
-            f"2. Sugestão de imagem (realista e sofisticada);\n"
+            f"2. Sugestão de imagem (incluindo uma cozinha planejada);\n"
             f"3. Sugestão de música sem direitos autorais do Pixabay."
         )
     elif formato == "post carrossel":
         corpo = (
             f"Crie {input.quantidade} carrosséis sobre {input.tema}.\n"
-            f"Para cada carrossel, elabore:\n"
-            f"1. Título impactante;\n"
-            f"2. Texto para cada slide (máx. 100 caracteres);\n"
-            f"3. Sugestão de imagem por slide (realista e sofisticada);\n"
-            f"4. Legenda geral com CTA e hashtags (até 300 caracteres)."
+            f"Para cada carrossel, gere uma única imagem com um texto impactante a ser sobreposto diretamente na imagem.\n"
+            f"Também inclua uma legenda final com CTA e hashtags."
         )
     elif formato == "reels":
         corpo = (
@@ -84,12 +85,16 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
         tema=input.tema
     )
 
-    imagem_url = None
-    if input.gerar_imagem:
-        imagem_prompt = f"{input.tema} com ambientação realista e estilo sofisticado, cenário moderno, luz suave"
-        imagem_url = await gerar_imagem(imagem_prompt)
+    return {"publicacao": resposta}
 
-    return {
-        "publicacao": resposta,
-        "imagem_url": imagem_url
-    }
+
+@router.post("/gerar-imagem")
+async def gerar_imagem_ia(input: ImagemInput, user=Depends(autorizacao)):
+    try:
+        url = await gerar_imagem(input.prompt)
+        if input.texto:
+            imagem_base64 = gerar_imagem_com_texto(url, input.texto)
+            return {"imagem": imagem_base64}
+        return {"imagem": url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
