@@ -89,6 +89,7 @@ async def gerar_imagem(prompt: str) -> str:
         return ""
 
 # 📝 Sobrepor texto na imagem
+
 def gerar_imagem_com_texto(imagem_url: str, texto: str) -> str:
     try:
         response = requests.get(imagem_url)
