@@ -98,3 +98,5 @@ async def gerar_imagem_ia(input: ImagemInput, user=Depends(autorizacao)):
         return {"imagem": url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+        
+        print("URL gerada pelo DALL·E:", url)
