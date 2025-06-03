@@ -21,7 +21,7 @@ function NovaPublicacao() {
       objetivo,
       formato,
       quantidade: parseInt(quantidade) || 1,
-      id_assistant: ''
+      id_assistant: 'asst_OuBtdCCByhjfqPFPZwMK6d9y'
     };
 
     try {
