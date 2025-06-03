@@ -18,7 +18,7 @@ API_BASE = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
 # 🔧 Cliente OpenAI assíncrono
 client = AsyncOpenAI(api_key=API_KEY, base_url=API_BASE)
 
-# 🧠 Hashtags temáticas para enriquecer prompts
+# 🧠 Hashtags temáticas
 HASHTAGS_TEMATICAS = {
     "fábrica": ["#FabricaDeMoveis", "#FabricaPropria", "#MovelPlanejado"],
     "cozinha": ["#CozinhaPlanejada", "#DesignDeInteriores"],
@@ -31,7 +31,7 @@ HASHTAGS_TEMATICAS = {
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# 🌟 Geração de texto via Assistente
+# 🎯 Geração de texto via Assistente
 async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
     conhecimento = consultar_conhecimento(prompt)
     if conhecimento:
@@ -64,14 +64,13 @@ async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
             msg.content[0].text.value.strip()
             for msg in messages.data if msg.role == "assistant"
         ]
-
         return "\n\n".join(respostas) if respostas else "Não foi possível obter uma resposta do assistente."
 
     except OpenAIError as e:
         logging.error(f"Erro na API da OpenAI: {e}")
         return "Estamos passando por instabilidades técnicas no momento. Por favor, tente novamente mais tarde."
 
-# 🎨 Geração de imagem com DALL·E 3
+# 🖼️ Geração de imagem DALL·E 3
 async def gerar_imagem(prompt: str) -> str:
     try:
         resposta = await client.images.generate(
@@ -82,36 +81,33 @@ async def gerar_imagem(prompt: str) -> str:
             n=1
         )
         return resposta.data[0].url
-
     except OpenAIError as e:
         logging.error(f"Erro ao gerar imagem com DALL·E: {e}")
-        return "Erro ao gerar imagem."
+        return ""
 
-# 🖼️ Geração de imagem com texto sobreposto manualmente
+# 📝 Sobrepor texto na imagem
 def gerar_imagem_com_texto(imagem_url: str, texto: str) -> str:
     try:
         response = requests.get(imagem_url)
         imagem = Image.open(BytesIO(response.content)).convert("RGBA")
         largura, altura = imagem.size
 
-        # Fundo da imagem para transparência
+        # Camada transparente
         txt_layer = Image.new("RGBA", imagem.size, (255, 255, 255, 0))
         draw = ImageDraw.Draw(txt_layer)
 
-        # Fonte com fallback
+        # Fonte
         try:
             fonte = ImageFont.truetype("DejaVuSans-Bold.ttf", size=40)
         except:
             fonte = ImageFont.load_default()
 
-        # Tamanho do texto
         text_width, text_height = draw.textsize(texto, font=fonte)
         x = (largura - text_width) / 2
         y = altura - text_height - 40
 
-        # Sombra
-        draw.text((x+2, y+2), texto, font=fonte, fill="black")
-        # Texto
+        # Sombra e texto
+        draw.text((x + 2, y + 2), texto, font=fonte, fill="black")
         draw.text((x, y), texto, font=fonte, fill="white")
 
         imagem_final = Image.alpha_composite(imagem, txt_layer)
@@ -122,5 +118,5 @@ def gerar_imagem_com_texto(imagem_url: str, texto: str) -> str:
         return f"data:image/png;base64,{imagem_base64}"
 
     except Exception as e:
-        logging.error(f"Erro ao sobrepor texto: {e}")
+        logging.error(f"Erro ao sobrepor texto na imagem: {e}")
         return ""
