@@ -1,3 +1,5 @@
+# ✅ publicacao.py
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from services.openai_service import gerar_resposta, gerar_imagem, gerar_imagem_com_texto
@@ -49,8 +51,11 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
     elif formato == "post carrossel":
         corpo = (
             f"Crie {input.quantidade} carrosséis sobre {input.tema}.\n"
-            f"Para cada carrossel, gere uma única imagem com um texto impactante a ser sobreposto diretamente na imagem.\n"
-            f"Também inclua uma legenda final com CTA e hashtags."
+            f"Cada carrossel deve conter {input.quantidade} slides.\n"
+            f"Para cada slide, gere:\n"
+            f"- Um texto impactante para sobreposição na imagem;\n"
+            f"- Um prompt para a geração da imagem no estilo da Radha.\n"
+            f"Ao final de cada carrossel, inclua uma legenda única com CTA e hashtags."
         )
     elif formato == "reels":
         corpo = (
@@ -87,7 +92,6 @@ async def criar_publicacao(input: PublicacaoInput, user=Depends(autorizacao)):
 
     return {"publicacao": resposta}
 
-
 @router.post("/gerar-imagem")
 async def gerar_imagem_ia(input: ImagemInput, user=Depends(autorizacao)):
     try:
@@ -98,5 +102,3 @@ async def gerar_imagem_ia(input: ImagemInput, user=Depends(autorizacao)):
         return {"imagem": url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-        
-        print("URL gerada pelo DALL·E:", url)
