@@ -33,6 +33,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 # 🎯 Geração de texto via Assistente
 async def gerar_resposta(prompt, id_assistant, contexto='geral', tema=None):
+    logging.info("🟢 Entrando em gerar_resposta")
+    logging.info(f"Prompt: {prompt}")
+    logging.info(f"Assistant ID: {id_assistant}")
     conhecimento = consultar_conhecimento(prompt)
     if conhecimento:
         prompt = f"{conhecimento}\n\nUsuário: {prompt}"
