@@ -9,12 +9,12 @@ function NovaPublicacao() {
   const [resposta, setResposta] = useState('');
   const [erro, setErro] = useState('');
   const [gerarImagem, setGerarImagem] = useState(false);
-  const [imagemUrl, setImagemUrl] = useState('');
+  const [imagens, setImagens] = useState([]);
 
   const enviar = async () => {
     setErro('');
     setResposta('');
-    setImagemUrl('');
+    setImagens([]);
 
     const dados = {
       tema,
@@ -27,24 +27,26 @@ function NovaPublicacao() {
     try {
       const resultado = await fetchComAuth('/nova-publicacao', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
       });
 
       setResposta(resultado.publicacao);
 
       if (gerarImagem && formato === 'post carrossel') {
-        const textoImagem = resultado.publicacao.split('\n')[0].trim();
-        const imagem = await fetchComAuth('/nova-publicacao/gerar-imagem', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ prompt: resultado.publicacao, texto: textoImagem })
-        });
-        setImagemUrl(imagem.imagem);
+        const slides = resultado.publicacao.split(/(?=Slide \d+:)/gi);
+        const imagensGeradas = [];
+
+        for (let slide of slides) {
+          const texto = slide.split('\n')[0]?.replace(/^Slide \d+:\s*/, '').trim();
+          const imagem = await fetchComAuth('/nova-publicacao/gerar-imagem', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: slide, texto })
+          });
+          imagensGeradas.push(imagem.imagem);
+        }
+        setImagens(imagensGeradas);
       }
     } catch (err) {
       setErro(err.message || JSON.stringify(err));
@@ -121,9 +123,11 @@ function NovaPublicacao() {
         </div>
       )}
 
-      {imagemUrl && (
-        <div className="mt-4">
-          <img src={imagemUrl} alt="Imagem gerada pela IA" className="w-full rounded" />
+      {imagens.length > 0 && (
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {imagens.map((img, idx) => (
+            <img key={idx} src={img} alt={`Imagem ${idx + 1}`} className="w-full rounded" />
+          ))}
         </div>
       )}
 
