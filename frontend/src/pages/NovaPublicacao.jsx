@@ -34,18 +34,25 @@ function NovaPublicacao() {
       setResposta(resultado.publicacao);
 
       if (gerarImagem && formato === 'post carrossel') {
-        const slides = resultado.publicacao.split(/(?=Slide \d+:)/gi);
+        const slides = resultado.publicacao.split(/#### Slide \d+/g).slice(1); // Remove o trecho anterior ao primeiro slide
         const imagensGeradas = [];
 
-        for (let slide of slides) {
-          const texto = slide.split('\n')[0]?.replace(/^Slide \d+:\s*/, '').trim();
+        for (const slide of slides) {
+          const textoMatch = slide.match(/\*\*Texto:\*\*\s*"(.*?)"/);
+          const promptMatch = slide.match(/\*\*Prompt para imagem:\*\*\s*(.*)/);
+
+          const texto = textoMatch ? textoMatch[1] : '';
+          const prompt = promptMatch ? promptMatch[1] : texto;
+
           const imagem = await fetchComAuth('/nova-publicacao/gerar-imagem', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: slide, texto })
+            body: JSON.stringify({ prompt, texto })
           });
+
           imagensGeradas.push(imagem.imagem);
         }
+
         setImagens(imagensGeradas);
       }
     } catch (err) {
@@ -124,7 +131,7 @@ function NovaPublicacao() {
       )}
 
       {imagens.length > 0 && (
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {imagens.map((img, idx) => (
             <img key={idx} src={img} alt={`Imagem ${idx + 1}`} className="w-full rounded" />
           ))}
