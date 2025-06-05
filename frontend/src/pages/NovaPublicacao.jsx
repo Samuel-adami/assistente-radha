@@ -33,7 +33,7 @@ function NovaPublicacao() {
 
       setResposta(resultado.publicacao);
 
-      if (gerarImagem && formato === 'post carrossel') {
+      if (gerarImagem) {
         const slides = resultado.publicacao.split(/#### Slide \d+/g).slice(1); // Remove o trecho anterior ao primeiro slide
         const imagensGeradas = [];
 
