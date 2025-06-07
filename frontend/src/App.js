@@ -71,7 +71,7 @@ function App() {
       className="px-4 py-2 rounded-md font-medium shadow"
       style={{ backgroundColor: "#8f00ff", color: "#ffffff" }}
     >
-      Assistente Sara2
+      Assistente Sara
     </Link>
   )}
   {possuiPermissao("campanhas") && (
